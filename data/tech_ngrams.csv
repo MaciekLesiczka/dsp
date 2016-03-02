@@ -1,0 +1,245 @@
+ngram,count,n
+flask,2,1
+0,7,1
+uwp,3,1
+unity3d,3,1
++,18,1
+cordova,5,1
+się,2,1
+studio,4,1
+apache,5,1
+powstanie,2,1
+że,3,1
+cloud,2,1
+to,6,1
+mssql,2,1
+6,4,1
+on,6,1
+winforms,2,1
+sqlite,2,1
+język,4,1
+native,2,1
+1,8,1
+bootstrap,7,1
+django,4,1
+kafka,2,1
+arduino,5,1
+typescript,3,1
+python,11,1
+framework,11,1
+.net,30,1
+css,9,1
+ew,2,1
+asp,4,1
+lub,4,1
+aplikacja,5,1
+mvc,28,1
+w,5,1
+ionic,4,1
+angular,10,1
+rails,6,1
+2,9,1
+być,6,1
+jquery,3,1
+10,3,1
+r,2,1
+angularjs,14,1
+asp.net,34,1
+-,10,1
+play,2,1
+react,8,1
+windows,7,1
+m,2,1
+angular2,3,1
+8,4,1
+do,6,1
+entity,6,1
+qt,2,1
+c++,18,1
+3d,2,1
+inne,2,1
+phaser,2,1
+lua,2,1
+webapi,2,1
+javascript,23,1
+f#,3,1
+js,31,1
+html5,6,1
+spark,2,1
+klient,2,1
+swift,2,1
+c,12,1
+mono,2,1
+linux,2,1
+backend,2,1
+java,28,1
+pi,3,1
+c#,55,1
+ruby,8,1
+nodejs,5,1
+avr,3,1
+io,3,1
+in,2,1
+unity,7,1
+html,12,1
+android,22,1
+coś,2,1
+ios,4,1
+wpf,12,1
+php,7,1
+i,10,1
+docker,2,1
+nosql,2,1
+rest,4,1
+mysql,4,1
+co,5,1
+web,5,1
+elm,2,1
+css3,3,1
+akka.net,2,1
+game,2,1
+server,3,1
+api,6,1
+google,2,1
+spring,4,1
+scala,4,1
+może,10,1
+mongodb,4,1
+core,9,1
+bo,2,1
+tdd,2,1
+&amp;,3,1
+raspberry,4,1
+azure,14,1
+wszystko,2,1
+haskell,2,1
+opengl,4,1
+apps,2,1
+aurelia,2,1
+:,2,1
+ember,2,1
+z,2,1
+głowy,2,1
+universal,3,1
+na,6,1
+5,9,1
+node,11,1
+reactjs,2,1
+sql,6,1
+xamarin,9,1
+oraz,4,1
+mvc angularjs,2,2
+js c#,3,2
+ruby on,5,2
+css javascript,2,2
+c c++,5,2
+c# web,2,2
+js react,2,2
+java asp.net,3,2
+core 1,7,2
+wpf c#,3,2
+javascript jquery,2,2
+android javascript,2,2
++ wpf,2,2
+xamarin java,2,2
+angular js,3,2
+java android,6,2
+m in,2,2
+raspberry pi,3,2
+html css,6,2
+android java,3,2
+html 5,2,2
+mysql mssql,2,2
+mvc android,2,2
+c++ opengl,3,2
+javascript html,2,2
+mvc bootstrap,2,2
+.net mvc,2,2
+azure java,2,2
+0 entity,2,2
+może azure,2,2
+.net c#,6,2
+asp.net core,4,2
+android studio,2,2
+mvc 5,2,2
+android +,2,2
+js mongodb,2,2
+js angular,2,2
+apache spark,2,2
+.net wpf,3,2
+web api,3,2
+angularjs bootstrap,2,2
+c# wpf,4,2
+apache kafka,2,2
+c# oraz,2,2
+angular 2,3,2
+i co,2,2
+java apache,2,2
+azure c#,2,2
+azure być,2,2
+c# xamarin,3,2
+angularjs 2,2,2
+sql server,3,2
+.net mono,2,2
+spring mvc,2,2
+c# c#,2,2
+asp.net 5,3,2
+html5 css3,2,2
+c# c++,2,2
+unity 3d,2,2
+entity framework,6,2
+node js,10,2
+css asp.net,2,2
+on rails,5,2
+android ios,2,2
+windows 10,3,2
+html5 angularjs,2,2
+c# java,3,2
+do głowy,2,2
+java javascript,2,2
+c++ python,2,2
+1 0,5,2
+asp.net mvc,21,2
+java spring,3,2
+android c#,2,2
+js java,2,2
+universal apps,2,2
+python django,2,2
+javascript android,2,2
+angularjs c#,2,2
+c# asp.net,8,2
+c# .net,4,2
+i inne,2,2
+php c#,2,2
+c# +,3,2
+c# universal,2,2
+być może,6,2
+.net core,3,2
+react native,2,2
+c++ c++,2,2
+javascript node,3,2
+angularjs azure,2,2
+asp .net,3,2
+mvc asp.net,2,2
+scala play,2,2
+może azure być,2,3
+js java android,2,3
+ruby on rails,5,3
+asp .net mvc,2,3
+javascript node js,3,3
+azure być może,2,3
+core 1 0,5,3
+asp.net mvc 5,2,3
+node js angular,2,3
+css asp.net mvc,2,3
+c# asp.net mvc,5,3
+być może azure,2,3
+java spring mvc,2,3
+c# + wpf,2,3
+c c++ python,2,3
+.net core 1,2,3
+c# wpf c#,2,3
+asp.net mvc bootstrap,2,3
+0 entity framework,2,3
+asp.net core 1,3,3
+asp.net mvc android,2,3

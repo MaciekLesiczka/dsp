@@ -1,0 +1,94 @@
+ngram,count,n,len
+studio,4,1,6
+apache,5,1,6
+bootstrap,7,1,9
+django,4,1,6
+arduino,5,1,7
+python,11,1,6
+framework,11,1,9
+.net,30,1,4
+css,9,1,3
+ionic,4,1,5
+angular,24,1,7
+rails,6,1,5
+asp.net,37,1,7
+react,10,1,5
+windows,7,1,7
+entity,6,1,6
+c++,18,1,3
+javascript,23,1,10
+js,31,1,2
+c,12,1,1
+java,28,1,4
+c#,55,1,2
+ruby,8,1,4
+nodejs,15,1,6
+unity,7,1,5
+html,18,1,4
+android,22,1,7
+ios,4,1,3
+wpf,12,1,3
+php,7,1,3
+rest,4,1,4
+mysql,4,1,5
+web,5,1,3
+api,6,1,3
+spring,4,1,6
+scala,4,1,5
+mongodb,4,1,7
+core,9,1,4
+raspberry pi,4,1,9
+azure,14,1,5
+opengl,4,1,6
+sql,6,1,3
+xamarin,9,1,7
+asp.net core,4,2,12
+entity framework,6,2,16
+asp.net mvc,21,2,11
+ruby on rails,5,3,13
+flask,2,1,5
+unity3d,3,1,7
+cloud,2,1,5
+mssql,2,1,5
+winforms,2,1,8
+sqlite,2,1,6
+typescript,3,1,10
+jquery,3,1,6
+r,2,1,1
+play,2,1,4
+angular2,3,1,8
+qt,2,1,2
+3d,2,1,2
+phaser,2,1,6
+lua,2,1,3
+f#,3,1,2
+klient,2,1,6
+swift,2,1,5
+mono,2,1,4
+linux,2,1,5
+backend,2,1,7
+avr,3,1,3
+io,3,1,2
+docker,2,1,6
+nosql,2,1,5
+elm,2,1,3
+css3,3,1,4
+akka.net,2,1,8
+game,2,1,4
+server,3,1,6
+google,2,1,6
+tdd,2,1,3
+haskell,2,1,7
+apps,2,1,4
+aurelia,2,1,7
+ember,2,1,5
+universal,3,1,9
+apache spark,2,2,12
+web api,5,2,7
+apache kafka,2,2,12
+sql server,3,2,10
+unity 3d,2,2,8
+windows 10,3,2,10
+universal apps,2,2,14
+.net core,3,2,9
+mo¿e,10,1,4
