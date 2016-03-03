@@ -9,16 +9,18 @@ hrs = content_div.find_all("hr")
 
 
 def get_dev_info(hr_element):
-    header = hr_element.find_next_sibling()
-    details = header.find_next_sibling()
-    links = details.find_all('a')
-    header_html = unicode(header)
-    dev = {'name': header.text[0:(header.text.find("-") - 1)],
-           'project_title': header_html[header_html.find('"<i>') + 4:(header_html.find('</i>"'))],
-           "tech_stack": header_html[header_html.find('</i>" (') + 7:header_html.find(")</h4>")],
-           "project_desc": details.find("span").text,
-           "blog_url": links[0]['href'],
-           "repo_url": links[1]['href']}
+    contestant_div = hr_element.find_next_sibling()
+
+    def get_cell(class_name):
+        return contestant_div.select(class_name)[0].text
+
+    dev = {'first_name': get_cell('.dsp_first_name'),
+           'last_name': get_cell('.dsp_last_name'),
+           'project_title': get_cell('.dsp_prj_name'),
+           "tech_stack": get_cell('.dsp_tech'),
+           "project_desc": get_cell('.dsp_prj_desc'),
+           "blog_url": contestant_div.select('.dsp_blog_url')[0]['href'],
+           "repo_url": contestant_div.select('.dsp_src_url')[0]['href']}
     return dev
 
 devs = [get_dev_info(hr) for hr in hrs]
