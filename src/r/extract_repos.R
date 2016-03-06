@@ -32,6 +32,4 @@ all.repos = subset(subset(devs,repo_name!="/all/"), repo_name!="")[, c("repo_own
 
 repos = rbind(all.repos,all.org.repos.df)
 
-
-
-write.csv(repos, "../../data/repos.csv")
+write.csv(repos, "../../data/repos.csv",row.names = F)
