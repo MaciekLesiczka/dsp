@@ -4,7 +4,6 @@ from pandas import DataFrame
 
 page = urllib2.urlopen('http://imiona.nazwiska-polskie.pl/meskie').read()
 soup = BeautifulSoup(page)
-soup.body.select('div')
 all_rows = soup.select('.namesTab')[0].select('tr')
 all_names = [tr.select('td')[2].text for tr in all_rows[1:]]
 
