@@ -1,7 +1,7 @@
 library(wordcloud)
 library(ggplot2)
 
-df = read.csv('../../data/tech_ngrams_filtered.csv',encoding = "utf-8")
+df = read.csv('../../data/tech_ngrams_filtered.csv',encoding = "UTF-8")
 
 pal <- brewer.pal(9,"YlGnBu")
 pal <- pal[-(1:3)]
