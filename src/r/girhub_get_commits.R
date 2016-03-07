@@ -1,8 +1,6 @@
 library(github)
 
 
-contest.announcement = as.POSIXct("2016-02-01",tz = "GMT")
-contest.start = as.POSIXct("2016-03-01",tz = "GMT")
 
 
 get.dsp.commits = function(repos){
@@ -19,7 +17,7 @@ get.dsp.commits = function(repos){
       commits =sapply(request$content, function(r) date= r$commit$committer$date)
       if(length(commits) > 0){
         comstats = lapply(request$content, function(r) {
-          if( r$commit$committer$date>=contest.start ){
+          if( r$commit$committer$date>=contest.start & r$commit$committer$date<contest.week2){
             stats = get.repository.commit(owner,repo,r$sha)$content$stats
             c(stats$additions, stats$deletions)
           }
