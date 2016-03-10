@@ -1,0 +1,7 @@
+library(data.table)
+library(ggplot2)
+library(scales)
+contest.announcement = as.POSIXct("2016-02-01",tz = "CET")
+contest.start = as.POSIXct("2016-03-01",tz = "CET")
+contest.week2 = as.POSIXct("2016-03-08",tz = "CET")
+theme_set(theme_grey(base_size = 18)) 
