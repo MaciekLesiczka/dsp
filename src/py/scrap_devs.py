@@ -14,12 +14,15 @@ def get_dev_info(hr_element):
     def get_cell(class_name):
         return contestant_div.select(class_name)[0].text
 
+    blog_url = contestant_div.select('.dsp_blog_url')[0]['href']
+    if blog_url.endswith('/'):
+       blog_url = blog_url[0:-1]
     dev = {'first_name': get_cell('.dsp_first_name'),
            'last_name': get_cell('.dsp_last_name'),
            'project_title': get_cell('.dsp_prj_name'),
            "tech_stack": get_cell('.dsp_tech'),
            "project_desc": get_cell('.dsp_prj_desc'),
-           "blog_url": contestant_div.select('.dsp_blog_url')[0]['href'],
+           "blog_url": blog_url,
            "repo_url": contestant_div.select('.dsp_src_url')[0]['href'],
            }
     return dev
