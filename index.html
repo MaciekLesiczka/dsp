@@ -1,51 +1,37 @@
-<html lang="pl">
+﻿<html>
     <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>DSP '16</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
-    
-        <style>
-            path.domain {
-                fill: none;
-            }
-
-            line {
-                stroke: #777;
-            }
-            .tag {
-                font-family:Impact
-            }
-            .dev-list {
-                position: absolute;
-                left: 800px;
-                top:20px
-            }
-
-            .dev-list a{
-                display: block;
-                    line-height: 1
-            }
-        </style>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">    
+        <link rel="stylesheet" href="style.css">        
     </head>
     <body>
         <div class="container-fluid">
             <div class="page-header">
-                <h1>DSP 2016</h1>                
+                <h1>dsp-meta</h1>        
+                <p>Discovering numbers of <a target="_blank" href="http://dajsiepoznac.pl">Daj się poznać</a> contest.</p>        
             </div>
-            <h3>Technologies</h3>            
-            <div id="techcloud" style="position: relative">
-                <svg />
+            <h3>Things we learn and try.</h3>
+            <br/>
+            <div id="techcloud-container">
+                <div id="techcloud">
 
-                <div class="dev-list">
-                    <span class="tag" style="font-size:30px"></span>                   
-                </div>
-            </div>                                    
-            <hr/>
+                    <svg />
+
+                    <div class="dev-list">
+                        <span class="tag" style="font-size:30px"></span>
+                        <div class="dev-links">
+
+                        </div>
+                    </div>
+                </div>                                                               
+            </div>
             
-        </div>
+            <hr />
+            <p>go to <a href="http://macieklesiczka.github.io">blog</a></p>
+        </div>               
         <script type="text/javascript" src="bundle.js"></script>
         <script type="text/javascript" src="http://livejs.com/live.js"></script>       
     </body>
