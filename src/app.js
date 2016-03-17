@@ -1,0 +1,15 @@
+var d3 = require('d3')
+d3.csv('./data/sample.csv', function(data){
+	d3.select('#container').selectAll('circle')
+	  .data(data)
+      .enter()
+      .append('circle')
+	  .attr('cx',function(d){return d.k})
+	  .attr('cy',function(d){return d.v})
+	  .attr('r',8)   	  
+	  .transition()
+	  .delay(300)
+	  .duration(1000)
+	  .attr('cy',80)
+})
+
