@@ -4,24 +4,24 @@
 
 Go to ./src folder and
 
-- install tools (if you don't have them yet)
+1. install tools globally (if you don't have them yet)
 
-```
-$ npm install --global gulp-cli
-$ npm install --global browserify
-```
+  ```
+  $ npm install --global gulp-cli
+  $ npm install --global browserify
+  ```
 
-- install dependencies 
+2. install dependencies 
 
-```
-$ npm install
-```
+  ```
+  $ npm install
+  ```
 
-- launch an app
+3. launch the app
 
-```
-$ gulp
-```
+  ```
+  $ gulp
+  ```
 
 
 
