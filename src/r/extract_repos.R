@@ -1,9 +1,5 @@
 library(github)
 
-client.id <- "86293fe8761fdc158441" 
-client.secret<- "8e963a81e3067e32c3647d94973417b8ef1b64a3" 
-ctx = interactive.login(client.id, client.secret)
-
 
 devs = read.csv("../../data/devs.csv", encoding = "UTF-8")
 

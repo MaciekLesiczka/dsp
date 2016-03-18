@@ -1,7 +1,10 @@
 library(ggplot2)
-
+source('common.r')
+source('github_login.R')
+source('github_get_commits.R')
 
 repos = read.csv("../../data/repos.csv")
+
 
 
 dsp.commits = get.dsp.commits(repos)

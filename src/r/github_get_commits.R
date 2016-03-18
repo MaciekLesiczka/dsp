@@ -1,12 +1,12 @@
-library(github)
+source('github_utils.r')
 
 
 
 
 get.dsp.commits = function(repos){
   all.commits = apply(repos,1,function(x){
-    owner = as.character(x[1])
-    repo = as.character(x[2])
+    owner = as.character(x['repo_owner'])
+    repo = as.character(x['repo_name'])
     
     request = get.repository.commits(owner, repo)
     if(request$code != 200 && request$code != 304){
@@ -17,7 +17,7 @@ get.dsp.commits = function(repos){
       commits =sapply(request$content, function(r) date= r$commit$committer$date)
       if(length(commits) > 0){
         comstats = lapply(request$content, function(r) {
-          if( r$commit$committer$date>=contest.start & r$commit$committer$date<contest.week2){
+          if( r$commit$committer$date>=contest.start){
             stats = get.repository.commit(owner,repo,r$sha)$content$stats
             c(stats$additions, stats$deletions)
           }
