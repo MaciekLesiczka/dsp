@@ -5,32 +5,12 @@ source('github_get_commits.R')
 
 repos = read.csv("../../data/repos.csv")
 
-
-
 dsp.commits = get.dsp.commits(repos)
 
 
-dsp.commits.first.week = subset(dsp.commits,commit>=contest.start&commit<contest.week2)
+dsp.commits.march = subset(dsp.commits,commit>=contest.start)
 
-#write.csv( dsp.commits.first.week, "../data/dsp.commits.first.week.csv",fileEncoding="UTF-8")
-
-dsp.get.languages = function(repos){ 
-  unique(unlist(apply(repos,1,function(x){
-  owner = as.character(x[1])
-  repo = as.character(x[2])
-  
-  request = get.repository.languages(owner, repo)
-  if(request$code != 200 && request$code != 304){
-    print(paste(request$content$message, "for", owner, ", repo", repo))
-    NULL
-  }
-  else{
-    languages = names(request$content)
-    print (languages)
-    languages
-  }
-})))
-}
+#write.csv( dsp.commits, "../../data/dsp.commits.csv",fileEncoding="UTF-8")
 
 #Punchcard
 dsp.commits.first.week.date.parts = data.frame(
@@ -42,20 +22,59 @@ write.csv( table(dsp.commits.first.week.date.parts), "../js/data.csv",fileEncodi
 
 
 #General stats
-dsp.commits.first.week.stats = c(sum(dsp.commits.first.week$additions)-sum(dsp.commits.first.week$deletions), 
-  length(unique(dsp.commits.first.week$repo_name)),
-  length(dsp.commits.first.week$commit),
-  length(dsp.languages))
-names(dsp.commits.first.week.stats)=c("lines of code", "active repos", "commits", "languages")
-dsp.commits.first.week.stats
+
+dsp.languages = dsp.get.languages(repos)
+
+basic.stats = function(commits){
+  result = c(sum(commits$additions)-sum(commits$deletions), 
+                                   length(unique(commits$repo_name)),
+                                   length(commits$commit))
+  names(result)=c("lines of code", "active repos", "commits")
+  result
+}
+
+ sapply(dsp.commits$commit, function(x){
+# todo: calculate contest week number   
+   
+ })
+
+dsp.commits.week1 = subset(dsp.commits,
+  as.Date(commit)>=contest.start.date &
+  as.Date(commit)<contest.start.date+6
+)
+
+dsp.commits.week2 = subset(dsp.commits,
+  as.Date(commit)>=(contest.start.date +6) &
+  as.Date(commit)<(contest.start.date+6+7)
+)
+ 
+dsp.commits.week3 = subset(dsp.commits,
+                           as.Date(commit)>=(contest.start.date +6 + 7) &
+                           as.Date(commit)<(contest.start.date+6+7 + 7)
+) 
+
+second.week.in.active.repos.from.first.week = subset(dsp.commits.week2, repo_owner %in% dsp.commits.week1$repo_owner)
 
 
-dsp.languages = dsp.get.languages()
+table(dsp.commits$repo_owner)
 
 
-dsp.commits.first.week.freq = data.frame(table(dsp.commits.first.week$repo_name))
 
-ggplot(data.frame(table(subset(dsp.commits.first.week.freq, Freq!=0)$Freq)), aes(Var1,Freq)) + geom_bar(stat="identity",fill="lightskyblue3") + 
+basic.stats(dsp.commits)       
+basic.stats(dsp.commits.march)
+basic.stats(dsp.commits.week1)
+basic.stats(dsp.commits.week2)
+basic.stats(dsp.commits.week3)
+basic.stats(second.week.in.active.repos.from.first.week)
+
+
+
+
+
+
+dsp.commits.freq = data.frame(table(dsp.commits$repo_name))
+
+ggplot(data.frame(table(subset(dsp.commits.freq, Freq!=0)$Freq)), aes(Var1,Freq)) + geom_bar(stat="identity",fill="lightskyblue3") + 
   coord_flip() + 
   theme_minimal()+
   geom_text(aes(x=Var1, y=Freq, label=Freq, 
@@ -90,6 +109,6 @@ plot(ecdf(newlineswithoutoutliers))
 c(LoC=sum(newlineswithoutoutliers), summary(newlineswithoutoutliers)[4])
 
 
-
+unique(dsp.commits$repo_name)
 
 
