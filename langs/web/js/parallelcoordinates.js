@@ -2,14 +2,13 @@ function ParallelCoordinates(data,options) {
 	var self=this;
 
 	var scale_type=options.scale || "linear";
-    //console.log(data)`
+    
 	function nestData(data) {
 		return data.map(function(x){ return {key:x.lang, values : x}})
 	}
-
-    //todo GLOBAL!
-	nested_data=nestData(data);
-	//console.log(nested_data)
+    
+	var nested_data=nestData(data);
+	
 	var WIDTH=Math.round(window.innerWidth*(window.innerWidth<=960?1:0.8));
 		HEIGHT=Math.min(Math.max(Math.round(window.innerHeight-150),420),800);
  
@@ -74,20 +73,14 @@ function ParallelCoordinates(data,options) {
 				"stroke-width":0
 			})
 
-
 	var xscale=d3.scale.ordinal().domain(options.columns).rangePoints([0,WIDTH-(margins.left+margins.right+padding.left+padding.right)]);
-
-	
-	
 	var yscales={},
 		width_scales={};
 
 	var extents={};
 
-	function updateScales() {
-
-            //todo GLOBAL!
-			extents=(function(){
+	function updateScales() {            
+			var extents=(function(){
 				var extents={};
 				options.columns.forEach(function(d,i){
 					extents[d]=d3.extent(nested_data,function(o){
@@ -129,15 +122,11 @@ function ParallelCoordinates(data,options) {
 								var __a=(a.values[use]),
 									__b=(b.values[use]);
 
-								// if(options.dimensions.indexOf(d)==-1) {
-								// 	__a=(a.values[use]/((options.dimensions.indexOf(use)>-1)?1:a.values[options.ref]));
-								// 	__b=(b.values[use]/((options.dimensions.indexOf(use)>-1)?1:b.values[options.ref]))	
-								// }
-								
-                                if(d=="lang"){
-                                    console.log('' + __a + ', ' + __b)
-                                }
-                                
+								if(options.dimensions.indexOf(d)==-1) {
+									__a=(a.values[use]/((options.dimensions.indexOf(use)>-1)?1:a.values[options.ref]));
+									__b=(b.values[use]/((options.dimensions.indexOf(use)>-1)?1:b.values[options.ref]))	
+								}
+								                                                                
 								return sorting(__a, __b);
 
 							}).map(function(o){
@@ -333,15 +322,10 @@ function ParallelCoordinates(data,options) {
 				return width_scales[d].range()[1]/2;
 			})
 			.attr("y2",0)
-		
-
 
 		var ticks=axis
 			.selectAll("g.tick")
 				.data(function(d){
-
-					
-
 
 					var ticks=[
 								0,
@@ -543,8 +527,7 @@ function ParallelCoordinates(data,options) {
 				.attr("y",-4)
 				.attr("width",0)
 				.attr("height",8)
-				.style({
-					//fill:"url(#diagonalHatch)"
+				.style({					
                     fill:"#9ecae1"
 				})
 
