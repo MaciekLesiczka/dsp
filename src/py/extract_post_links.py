@@ -22,16 +22,10 @@ def get_feed(feed_url):
             elif 'updated_parsed' in entry:
                 published = entry.updated_parsed
             yield feed_url, published, entry.link
-    except TimeoutError:
-        print "Timeout for" + site_url
     except Exception as err:
-        print 'Error ' + str(err) + ' \nfor ' + site_url
+        print 'Error ' + str(err) + ' \nfor ' + feed_url
 
 
-
-len([i for i in all_items if i[1] is not None and i[1].tm_mon >=3 and i[1].tm_year>=2016])
-
-len([i for i in all_items if i[1] is not None and i[1].tm_mon >=3 and i[1].tm_year>=2016])
 
 all_items = [
 
@@ -50,6 +44,12 @@ all_posts_df = DataFrame(all_posts)
 
 
 all_posts_df.columns = ['url', 'day', 'month', 'year']
+
+
+
+len([i for i in all_items if i[1] is not None and i[1].tm_mon >=3 and i[1].tm_year>=2016])
+
+len([i for i in all_items if i[1] is not None and i[1].tm_mon >=3 and i[1].tm_year>=2016])
 
 
 #all_posts_df.to_csv('..\\..\\data\\all_posts_27032016.csv')
