@@ -3,6 +3,7 @@
 from feedparser import parse
 from pandas import DataFrame
 import time
+from datetime import datetime
 
 posts_rss = DataFrame.from_csv('..\\..\\data\\post_rss.csv', encoding="utf-8", index_col=False)
 
@@ -34,14 +35,18 @@ all_items = [
 ]
 
 
-all_posts = [( i[0], None if i[1] is None else i[1].tm_mday, None if i[1] is None else i[1].tm_mon, None if i[1] is None else i[1].tm_year) for i in all_items]
+def get_date_string(parsed):
+    if parsed is None:
+        return ''
+    else:
+        return datetime(parsed.tm_year, parsed.tm_mon,parsed.tm_mday).strftime("%Y-%m-%d")
 
+
+all_posts = [( i[0],i[2],  get_date_string( i[1]) ) for i in all_items]
 all_posts_df = DataFrame(all_posts)
-all_posts_df.columns = ['url', 'day', 'month', 'year']
-len([i for i in all_items if i[1] is not None and i[1].tm_mon >=3 and i[1].tm_year>=2016])
+all_posts_df.columns = ['feed_url', 'post_url', 'date']
 
-
-all_posts_df.to_csv('..\\..\\data\\posts_link_archive\\'+time.strftime("%Y%m%d")+'.csv')
+all_posts_df.to_csv('..\\..\\data\\posts_link_archive\\'+time.strftime("%Y%m%d")+'.csv', encoding="utf-8", index=False)
 
 
 
