@@ -1,632 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-(function(root, factory) {
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = factory(require('d3'));
-    } else if (typeof define === 'function' && define.amd) {
-        define(['d3'], factory);
-    } else {
-        root.d3 = factory(root.d3);
-    }
-}(this, function(d3) {
-        
-    d3.selection.prototype.translate = function(xy) {
-        return this.attr('transform', function(d,i) {
-            return 'translate('+[typeof xy == 'function' ? xy.call(this, d,i) : xy]+')';
-        });
-    };
-
-    d3.transition.prototype.translate = function(xy) {
-        return this.attr('transform', function(d,i) {
-            return 'translate('+[typeof xy == 'function' ? xy.call(this, d,i) : xy]+')';
-        });
-    };
-
-    d3.selection.prototype.tspans = function(lines, lh) {
-        return this.selectAll('tspan')
-            .data(lines)
-            .enter()
-            .append('tspan')
-            .text(function(d) { return d; })
-            .attr('x', 0)
-            .attr('dy', function(d,i) { return i ? lh || 15 : 0; });
-    };
-
-    d3.selection.prototype.append = 
-    d3.selection.enter.prototype.append = function(name) {
-        var n = d3_parse_attributes(name), s;
-        //console.log(name, n);
-        name = n.attr ? n.tag : name;
-        name = d3_selection_creator(name);
-        s = this.select(function() {
-            return this.appendChild(name.apply(this, arguments));
-        });
-        return n.attr ? s.attr(n.attr) : s;
-    };
-
-    d3.selection.prototype.insert = 
-    d3.selection.enter.prototype.insert = function(name, before) {
-        var n = d3_parse_attributes(name), s;
-        name = n.attr ? n.tag : name;
-        name = d3_selection_creator(name);
-        before = d3_selection_selector(before);
-        s = this.select(function() {
-            return this.insertBefore(name.apply(this, arguments), before.apply(this, arguments) || null);
-        });
-        return n.attr ? s.attr(n.attr) : s;
-    };
-
-    var d3_parse_attributes_regex = /([\.#])/g;
-
-    function d3_parse_attributes(name) {
-        if (typeof name === "string") {
-            var attr = {},
-                parts = name.split(d3_parse_attributes_regex), p;
-                name = parts.shift();
-            while ((p = parts.shift())) {
-                if (p == '.') attr['class'] = attr['class'] ? attr['class'] + ' ' + parts.shift() : parts.shift();
-                else if (p == '#') attr.id = parts.shift();
-            }
-            return attr.id || attr['class'] ? { tag: name, attr: attr } : name;
-        }
-        return name;
-    }
-
-    function d3_selection_creator(name) {
-        return typeof name === "function" ? name : (name = d3.ns.qualify(name)).local ? function() {
-            return this.ownerDocument.createElementNS(name.space, name.local);
-        } : function() {
-            return this.ownerDocument.createElementNS(this.namespaceURI, name);
-        };
-    }
-
-    function d3_selection_selector(selector) {
-        return typeof selector === "function" ? selector : function() {
-            return this.querySelector(selector);
-        };
-    }
-
-    d3.wordwrap = function(line, maxCharactersPerLine) {
-        var w = line.split(' '),
-            lines = [],
-            words = [],
-            maxChars = maxCharactersPerLine || 40,
-            l = 0;
-        w.forEach(function(d) {
-            if (l+d.length > maxChars) {
-                lines.push(words.join(' '));
-                words.length = 0;
-                l = 0;
-            }
-            l += d.length;
-            words.push(d);
-        });
-        if (words.length) {
-            lines.push(words.join(' '));
-        }
-        return lines;
-    };
-    
-    d3.ascendingKey = function(key) {
-        return typeof key == 'function' ? function (a, b) {
-              return key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : key(a) >= key(b) ? 0 : NaN;
-        } : function (a, b) {
-              return a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : a[key] >= b[key] ? 0 : NaN;
-        };
-    };
-
-    d3.descendingKey = function(key) {
-        return typeof key == 'function' ? function (a, b) {
-            return key(b) < key(a) ? -1 : key(b) > key(a) ? 1 : key(b) >= key(a) ? 0 : NaN;
-        } : function (a, b) {
-            return b[key] < a[key] ? -1 : b[key] > a[key] ? 1 : b[key] >= a[key] ? 0 : NaN;
-        };
-    };
-    
-    d3.f = function(){
-        var functions = arguments;
-        //convert all string arguments into field accessors
-        var i = 0, l = functions.length;
-        while (i < l) {
-            if (typeof(functions[i]) === 'string' || typeof(functions[i]) === 'number'){
-                functions[i] = (function(str){ return function(d){ return d[str] }; })(functions[i])
-            }
-            i++;
-        }
-         //return composition of functions
-        return function(d) {
-            var i=0, l = functions.length;
-            while (i++ < l) d = functions[i-1].call(this, d);
-            return d;
-        };
-    };
-    // store d3.f as convenient unicode character function (alt-f on macs)
-    if (typeof window !== 'undefined' && !window.hasOwnProperty('ƒ')) window.ƒ = d3.f;
-    
-    // this tweak allows setting a listener for multiple events, jquery style
-    var d3_selection_on = d3.selection.prototype.on;
-    d3.selection.prototype.on = function(type, listener, capture) {
-        if (typeof type == 'string' && type.indexOf(' ') > -1) {
-            type = type.split(' ');
-            for (var i = 0; i<type.length; i++) {
-                d3_selection_on.apply(this, [type[i], listener, capture]);
-            }
-        } else {
-            d3_selection_on.apply(this, [type, listener, capture]);
-        }
-        return this;
-    };
-    
-    // for everyone's sake, let's add prop as alias for property
-    d3.selection.prototype.prop = d3.selection.prototype.property;
-
-    return d3;
-
-}));
-
-},{"d3":5}],2:[function(require,module,exports){
-(function(globals) {
-  function d3Transform(chain) {
-    var transforms = [];
-    if (chain !== undefined) { transforms.push(chain);  }
-
-    function push(kind, args) {
-      var n = args.length;
-
-      transforms.push(function() {
-        if (kind == 'seq') {
-          return args[0].apply(this, arr(arguments));
-        } else {
-          return kind + '(' + (n == 1 && typeof args[0] == 'function'
-              ? args[0].apply(this, arr(arguments)) : args) + ')';
-        }
-      });
-    }
-
-    function arr(args) {
-      return Array.prototype.slice.call(args);
-    }
-
-    var my = function() {
-      var that = this,
-          args = arr(arguments);
-
-      return transforms.map(function(f) {
-        return f.apply(that, args);
-      }).join(' ');
-    };
-
-    ['translate', 'rotate', 'scale', 'matrix', 'skewX', 'skewY', 'seq'].forEach(function(t) {
-      my[t] = function() {
-        push(t, arr(arguments));
-        return my;
-      };
-    });
-
-    return my;
-  }
-
-  // Add the "transform" method to d3.svg if d3.svg is defined.
-  if (typeof d3 !== 'undefined' && d3.svg) {
-      d3.svg.transform = d3Transform;
-  }
-
-  // Export the "transform" method if module.exports is defined, otherwise add it to the global namespace as d3Transform.
-  if (typeof module !== 'undefined' && module.exports) {
-      module.exports = d3Transform;
-  }  else {
-      globals.d3Transform = d3Transform;
-  }
-
-})(this);
-
-},{}],3:[function(require,module,exports){
-// Word cloud layout by Jason Davies, http://www.jasondavies.com/word-cloud/
-// Algorithm due to Jonathan Feinberg, http://static.mrfeinberg.com/bv_ch03.pdf
-(function() {
-
-if (typeof define === "function" && define.amd) define(["d3"], cloud);
-else cloud(this.d3);
-
-function cloud(d3) {
-  d3.layout.cloud = function cloud() {
-    var size = [256, 256],
-        text = cloudText,
-        font = cloudFont,
-        fontSize = cloudFontSize,
-        fontStyle = cloudFontNormal,
-        fontWeight = cloudFontNormal,
-        rotate = cloudRotate,
-        padding = cloudPadding,
-        spiral = archimedeanSpiral,
-        words = [],
-        timeInterval = Infinity,
-        event = d3.dispatch("word", "end"),
-        timer = null,
-        random = Math.random,
-        cloud = {};
-
-    cloud.start = function() {
-      var board = zeroArray((size[0] >> 5) * size[1]),
-          bounds = null,
-          n = words.length,
-          i = -1,
-          tags = [],
-          data = words.map(function(d, i) {
-            d.text = text.call(this, d, i);
-            d.font = font.call(this, d, i);
-            d.style = fontStyle.call(this, d, i);
-            d.weight = fontWeight.call(this, d, i);
-            d.rotate = rotate.call(this, d, i);
-            d.size = ~~fontSize.call(this, d, i);
-            d.padding = padding.call(this, d, i);
-            return d;
-          }).sort(function(a, b) { return b.size - a.size; });
-
-      if (timer) clearInterval(timer);
-      timer = setInterval(step, 0);
-      step();
-
-      return cloud;
-
-      function step() {
-        var start = Date.now();
-        while (Date.now() - start < timeInterval && ++i < n && timer) {
-          var d = data[i];
-          d.x = (size[0] * (random() + .5)) >> 1;
-          d.y = (size[1] * (random() + .5)) >> 1;
-          cloudSprite(d, data, i);
-          if (d.hasText && place(board, d, bounds)) {
-            tags.push(d);
-            event.word(d);
-            if (bounds) cloudBounds(bounds, d);
-            else bounds = [{x: d.x + d.x0, y: d.y + d.y0}, {x: d.x + d.x1, y: d.y + d.y1}];
-            // Temporary hack
-            d.x -= size[0] >> 1;
-            d.y -= size[1] >> 1;
-          }
-        }
-        if (i >= n) {
-          cloud.stop();
-          event.end(tags, bounds);
-        }
-      }
-    }
-
-    cloud.stop = function() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-      return cloud;
-    };
-
-    function place(board, tag, bounds) {
-      var perimeter = [{x: 0, y: 0}, {x: size[0], y: size[1]}],
-          startX = tag.x,
-          startY = tag.y,
-          maxDelta = Math.sqrt(size[0] * size[0] + size[1] * size[1]),
-          s = spiral(size),
-          dt = random() < .5 ? 1 : -1,
-          t = -dt,
-          dxdy,
-          dx,
-          dy;
-
-      while (dxdy = s(t += dt)) {
-        dx = ~~dxdy[0];
-        dy = ~~dxdy[1];
-
-        if (Math.min(Math.abs(dx), Math.abs(dy)) >= maxDelta) break;
-
-        tag.x = startX + dx;
-        tag.y = startY + dy;
-
-        if (tag.x + tag.x0 < 0 || tag.y + tag.y0 < 0 ||
-            tag.x + tag.x1 > size[0] || tag.y + tag.y1 > size[1]) continue;
-        // TODO only check for collisions within current bounds.
-        if (!bounds || !cloudCollide(tag, board, size[0])) {
-          if (!bounds || collideRects(tag, bounds)) {
-            var sprite = tag.sprite,
-                w = tag.width >> 5,
-                sw = size[0] >> 5,
-                lx = tag.x - (w << 4),
-                sx = lx & 0x7f,
-                msx = 32 - sx,
-                h = tag.y1 - tag.y0,
-                x = (tag.y + tag.y0) * sw + (lx >> 5),
-                last;
-            for (var j = 0; j < h; j++) {
-              last = 0;
-              for (var i = 0; i <= w; i++) {
-                board[x + i] |= (last << msx) | (i < w ? (last = sprite[j * w + i]) >>> sx : 0);
-              }
-              x += sw;
-            }
-            delete tag.sprite;
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
-    cloud.timeInterval = function(_) {
-      return arguments.length ? (timeInterval = _ == null ? Infinity : _, cloud) : timeInterval;
-    };
-
-    cloud.words = function(_) {
-      return arguments.length ? (words = _, cloud) : words;
-    };
-
-    cloud.size = function(_) {
-      return arguments.length ? (size = [+_[0], +_[1]], cloud) : size;
-    };
-
-    cloud.font = function(_) {
-      return arguments.length ? (font = d3.functor(_), cloud) : font;
-    };
-
-    cloud.fontStyle = function(_) {
-      return arguments.length ? (fontStyle = d3.functor(_), cloud) : fontStyle;
-    };
-
-    cloud.fontWeight = function(_) {
-      return arguments.length ? (fontWeight = d3.functor(_), cloud) : fontWeight;
-    };
-
-    cloud.rotate = function(_) {
-      return arguments.length ? (rotate = d3.functor(_), cloud) : rotate;
-    };
-
-    cloud.text = function(_) {
-      return arguments.length ? (text = d3.functor(_), cloud) : text;
-    };
-
-    cloud.spiral = function(_) {
-      return arguments.length ? (spiral = spirals[_] || _, cloud) : spiral;
-    };
-
-    cloud.fontSize = function(_) {
-      return arguments.length ? (fontSize = d3.functor(_), cloud) : fontSize;
-    };
-
-    cloud.padding = function(_) {
-      return arguments.length ? (padding = d3.functor(_), cloud) : padding;
-    };
-
-    cloud.random = function(_) {
-      return arguments.length ? (random = _, cloud) : random;
-    };
-
-    return d3.rebind(cloud, event, "on");
-  };
-
-  function cloudText(d) {
-    return d.text;
-  }
-
-  function cloudFont() {
-    return "serif";
-  }
-
-  function cloudFontNormal() {
-    return "normal";
-  }
-
-  function cloudFontSize(d) {
-    return Math.sqrt(d.value);
-  }
-
-  function cloudRotate() {
-    return (~~(Math.random() * 6) - 3) * 30;
-  }
-
-  function cloudPadding() {
-    return 1;
-  }
-
-  // Fetches a monochrome sprite bitmap for the specified text.
-  // Load in batches for speed.
-  function cloudSprite(d, data, di) {
-    if (d.sprite) return;
-    c.clearRect(0, 0, (cw << 5) / ratio, ch / ratio);
-    var x = 0,
-        y = 0,
-        maxh = 0,
-        n = data.length;
-    --di;
-    while (++di < n) {
-      d = data[di];
-      c.save();
-      c.font = d.style + " " + d.weight + " " + ~~((d.size + 1) / ratio) + "px " + d.font;
-      var w = c.measureText(d.text + "m").width * ratio,
-          h = d.size << 1;
-      if (d.rotate) {
-        var sr = Math.sin(d.rotate * cloudRadians),
-            cr = Math.cos(d.rotate * cloudRadians),
-            wcr = w * cr,
-            wsr = w * sr,
-            hcr = h * cr,
-            hsr = h * sr;
-        w = (Math.max(Math.abs(wcr + hsr), Math.abs(wcr - hsr)) + 0x1f) >> 5 << 5;
-        h = ~~Math.max(Math.abs(wsr + hcr), Math.abs(wsr - hcr));
-      } else {
-        w = (w + 0x1f) >> 5 << 5;
-      }
-      if (h > maxh) maxh = h;
-      if (x + w >= (cw << 5)) {
-        x = 0;
-        y += maxh;
-        maxh = 0;
-      }
-      if (y + h >= ch) break;
-      c.translate((x + (w >> 1)) / ratio, (y + (h >> 1)) / ratio);
-      if (d.rotate) c.rotate(d.rotate * cloudRadians);
-      c.fillText(d.text, 0, 0);
-      if (d.padding) c.lineWidth = 2 * d.padding, c.strokeText(d.text, 0, 0);
-      c.restore();
-      d.width = w;
-      d.height = h;
-      d.xoff = x;
-      d.yoff = y;
-      d.x1 = w >> 1;
-      d.y1 = h >> 1;
-      d.x0 = -d.x1;
-      d.y0 = -d.y1;
-      d.hasText = true;
-      x += w;
-    }
-    var pixels = c.getImageData(0, 0, (cw << 5) / ratio, ch / ratio).data,
-        sprite = [];
-    while (--di >= 0) {
-      d = data[di];
-      if (!d.hasText) continue;
-      var w = d.width,
-          w32 = w >> 5,
-          h = d.y1 - d.y0;
-      // Zero the buffer
-      for (var i = 0; i < h * w32; i++) sprite[i] = 0;
-      x = d.xoff;
-      if (x == null) return;
-      y = d.yoff;
-      var seen = 0,
-          seenRow = -1;
-      for (var j = 0; j < h; j++) {
-        for (var i = 0; i < w; i++) {
-          var k = w32 * j + (i >> 5),
-              m = pixels[((y + j) * (cw << 5) + (x + i)) << 2] ? 1 << (31 - (i % 32)) : 0;
-          sprite[k] |= m;
-          seen |= m;
-        }
-        if (seen) seenRow = j;
-        else {
-          d.y0++;
-          h--;
-          j--;
-          y++;
-        }
-      }
-      d.y1 = d.y0 + seenRow;
-      d.sprite = sprite.slice(0, (d.y1 - d.y0) * w32);
-    }
-  }
-
-  // Use mask-based collision detection.
-  function cloudCollide(tag, board, sw) {
-    sw >>= 5;
-    var sprite = tag.sprite,
-        w = tag.width >> 5,
-        lx = tag.x - (w << 4),
-        sx = lx & 0x7f,
-        msx = 32 - sx,
-        h = tag.y1 - tag.y0,
-        x = (tag.y + tag.y0) * sw + (lx >> 5),
-        last;
-    for (var j = 0; j < h; j++) {
-      last = 0;
-      for (var i = 0; i <= w; i++) {
-        if (((last << msx) | (i < w ? (last = sprite[j * w + i]) >>> sx : 0))
-            & board[x + i]) return true;
-      }
-      x += sw;
-    }
-    return false;
-  }
-
-  function cloudBounds(bounds, d) {
-    var b0 = bounds[0],
-        b1 = bounds[1];
-    if (d.x + d.x0 < b0.x) b0.x = d.x + d.x0;
-    if (d.y + d.y0 < b0.y) b0.y = d.y + d.y0;
-    if (d.x + d.x1 > b1.x) b1.x = d.x + d.x1;
-    if (d.y + d.y1 > b1.y) b1.y = d.y + d.y1;
-  }
-
-  function collideRects(a, b) {
-    return a.x + a.x1 > b[0].x && a.x + a.x0 < b[1].x && a.y + a.y1 > b[0].y && a.y + a.y0 < b[1].y;
-  }
-
-  function archimedeanSpiral(size) {
-    var e = size[0] / size[1];
-    return function(t) {
-      return [e * (t *= .1) * Math.cos(t), t * Math.sin(t)];
-    };
-  }
-
-  function rectangularSpiral(size) {
-    var dy = 4,
-        dx = dy * size[0] / size[1],
-        x = 0,
-        y = 0;
-    return function(t) {
-      var sign = t < 0 ? -1 : 1;
-      // See triangular numbers: T_n = n * (n + 1) / 2.
-      switch ((Math.sqrt(1 + 4 * sign * t) - sign) & 3) {
-        case 0:  x += dx; break;
-        case 1:  y += dy; break;
-        case 2:  x -= dx; break;
-        default: y -= dy; break;
-      }
-      return [x, y];
-    };
-  }
-
-  // TODO reuse arrays?
-  function zeroArray(n) {
-    var a = [],
-        i = -1;
-    while (++i < n) a[i] = 0;
-    return a;
-  }
-
-  var cloudRadians = Math.PI / 180,
-      cw = 1 << 11 >> 5,
-      ch = 1 << 11,
-      canvas,
-      ratio = 1;
-
-
-  // if (typeof window !== 'undefined') {
-    canvas = document.createElement("canvas");
-    canvas.width = 1;
-    canvas.height = 1;
-    ratio = Math.sqrt(canvas.getContext("2d").getImageData(0, 0, 1, 1).data.length >> 2);
-    canvas.width = (cw << 5) / ratio;
-    canvas.height = ch / ratio;
-  // } else {
-  //   // Attempt to use node-canvas.
-  //   var Canvas = require('Canvas');
-  //   canvas = new Canvas(cw << 5, ch);
-  // }
-
-  var c = canvas.getContext("2d"),
-      spirals = {
-        archimedean: archimedeanSpiral,
-        rectangular: rectangularSpiral
-      };
-  c.fillStyle = c.strokeStyle = "red";
-  c.textAlign = "center";
-}
-
-})();
-
-},{}],4:[function(require,module,exports){
-(function (global){
-var globals = {};
-
-// stash globals
-if ("d3" in global) globals.d3 = global.d3;
-global.d3 = require("d3");
-
-require("./d3.layout.cloud");
-module.exports = d3.layout.cloud;
-
-// restore globals
-if ("d3" in globals) global.d3 = globals.d3;
-else delete global.d3;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./d3.layout.cloud":3,"d3":5}],5:[function(require,module,exports){
 !function() {
   var d3 = {
     version: "3.5.16"
@@ -10181,150 +9553,922 @@ else delete global.d3;
   });
   if (typeof define === "function" && define.amd) this.d3 = d3, define(d3); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
 }();
-},{}],6:[function(require,module,exports){
-d3 = require('d3')
-require('d3-jetpack')
+},{}],2:[function(require,module,exports){
 
-require('d3-transform')
+var d3 = require('d3')
+var ParallelCoordinates = require('./parallelcoordinates')
 
-var tags = {};
-var cloud = require('d3.layout.cloud-browserify')
-var fill = d3.scale.category20();
-var cloudSize = 500;
-var hintHeight = 20;
-var pane = d3.select("body").select('div.container-fluid').select("#techcloud")
-    .select('svg')
-    .attr("width", cloudSize)
-    .attr("height", cloudSize + hintHeight);
-var selectedColor = function (i) {
-    return d3.rgb(fill(i)).darker(3)
-}
+	d3.csv("langs.csv", function(d){
+        
+         d['posts'] =  +d['posts']; ; 
+         d['repos_cnt'] = parseInt(d['repos_cnt']);
+         d['main_cnt'] = +d['main_cnt']; 
+         d['code_size_kb'] = +d['code_size_kb']; 
+         return d       
+    } ,function(data){
 
+        
+		var events={};        
+        
+		pc=ParallelCoordinates(data,{			
+			container:"#pc",
+			scale:"linear",
+			columns:["lang","code_size_kb","repos_cnt","main_cnt","posts"],			
+			title_column:"lang",
+			scale_map:{				
+				"lang":"ordinal",				
+				"repos_cnt":"ordinal",
+				"posts":"ordinal",
+				"main_cnt":"ordinal",
+				"code_size_kb":"ordinal"
+			},
+			use:{
+				"lang":"code_size_kb"
+			},
+			sorting:{
+				"lang":d3.ascending
+			},
+			formats:{
+				"year":"d"
+			},
+			dimensions:["lang","repos_cnt","posts","main_cnt","code_size_kb"],
+			column_map:{
+				"lang":["Project","Language"],
+                "code_size_kb":['Code Size', 'in KB'],		
+				"repos_cnt":["Projects", "Count"],				
+				"main_cnt":"Main Language",
+                "posts":["Stack Overflow", "posts"],						
+			},
+			help:{
+				"lang":"<h5>Project Language</h5>Programming language of the DSP Projects.<br/>Ordered by current overall code size.",
+				"repos_cnt":"<h5>Projects Count</h5>Total number of projects that use given language.",
+				"posts":"<h5>StackOverflow posts</h5>Number of posts in StackOverflow tagged by given language per March 2016.",
+				"main_cnt":"<h5>Main Language</h5>Number of projects where given language is the leading one.<br /> Calculated by code size.",
+				"code_size_kb":"<h5>Total Code size in KB</h5>Total code size across all projects, in kilobytes.",				
+			},
+			duration:1000,
+			path:"server/exports/",
+			extension:"csv"
+		});
+	});
 
-var selectTagOnDetailsPane = function (d, i) {
-    var details = d3.select('#techcloud').select('div.dev-list');
-    details.selectAll('span').html(d.text)
+	
 
+		 
 
-    var links = details.select('div.dev-links').selectAll('a').data(tags[d.text]);
+},{"./parallelcoordinates":3,"d3":1}],3:[function(require,module,exports){
+var d3 = require('d3') 
 
-    var populate = function(selection) {
-        selection
-            .attr('href', function(d) { return d })
-            .html(function(d) { return d })
-            .attr('class', 'small')
-            .attr('target','_blank');
-    }
+var ParallelCoordinates = function (data,options) {    
+	var self=this;
 
-    populate(links);    
-    populate(links.enter().append('a'));
-    links.exit().remove();
-
-    d3.select(this).style('fill', selectedColor(i))
-}
-
-var draw = function (words) {
-    var transform = d3.svg.transform()
-        .translate(function (d) { return [d.x, d.y] })
-        .rotate(function (d) { return d.rotate })
-
-    var hint = pane
-        .append('text.hint')
-        .text('click on a tag to keep selection')
-        .attr('x', 5)
-        .attr('y',cloudSize + hintHeight/2)
-        .style('font-size', '12px')
-        .style('font-style', 'italic')
-        .style('fill', '#999');
-
-
-
-    pane.append("g.wordcloud")
-        .translate([layout.size()[0] / 2, layout.size()[1] / 2])
-        .selectAll("text")
-        .data(words)
-        .enter()
-        .append("text.tag")
-        .style("font-size", function(d) { return d.size + "px"; })
-        .style("fill", function(d, i) { return fill(i); })
-        .style("cursor", "pointer")
-        .attr("text-anchor", "middle")
-        .text(function(d) { return d.text; })
-        .on('mouseover', function(d, i) {
-            if (!words.selected) {
-                selectTagOnDetailsPane.bind(this)(d, i);
-            }
-        })
-        .on('mouseout', function(d, i) {
-            if (!words.selected && words.selected !== d) {
-                var details = d3.select('#techcloud').select('div.dev-list');
-                details.selectAll('span').html('')
-                details.selectAll('a').remove()                
-                d3.select(this).style('fill', fill(i))
-            }
-        })
-        .on('click', function(d, i) {
-            if (words.selected === d) {
-                words.selected = undefined;
-            } else {
-                words.selected = d;
-                selectTagOnDetailsPane.bind(this)(d, i);
-
-            }
-            refreshSelection(words)
-            hint.transition()
-                .delay(500)
-                .duration(1000)
-                .style('fill', '#fff')
-        })
-        //.transition()
-        //.duration(1300)
-        .attr("transform", transform);
-}
-
-
-var refreshSelection = function(words) {
-    pane.select('g.wordcloud').selectAll('text').data(words).style('fill', function(d, i) {
-     if (words.selected===d) {
-         return selectedColor(i);
-     }
-     else {
-         return fill(i);
-     }
-    })
-}
-
-
-
-var layout = cloud()
-d3.csv('tech_tags.csv', function (data) {
-
-
-    data.forEach(function (x) { tags[x.tag] = x.devs.split(',') })
-
-    var freqRange = d3.extent(data, function (x) { return parseInt(x.count) })
-    wordScale = d3.scale.linear().domain(freqRange).range([15, 100])
-    var tagLettrCountMedian = d3.median(data, function (x) { return x.tag.length })
-
+	var scale_type=options.scale || "linear";
     
+	function nestData(data) {
+		return data.map(function(x){ return {key:x.lang, values : x}})
+	}
     
+	var nested_data=nestData(data);
+	
+	var WIDTH=Math.round(window.innerWidth*(window.innerWidth<=960?1:0.8));
+		HEIGHT=Math.min(Math.max(Math.round(window.innerHeight-150),420),800);
+ 
+	var margins={
+		left:20,
+		right:30,
+		top:30,
+		bottom:30
+	};
 
-    layout
-        .size([cloudSize, cloudSize])
-        .words(data.map(function (d) {
-            return { text: d.tag, size: wordScale(d.count) };
-          }))
-        .padding(1)
-        .rotate(function (d) { return d.text.length <  tagLettrCountMedian ? 90 : 0; })
-        .font("Impact")
-        .fontSize(function (d) { return d.size; })
-        .on("end", draw);
+	var padding={
+		left:150,
+		right:130,
+		top:20,
+		bottom:0
+	};
 
-    layout.start();
+	var marker_width=[
+		2,
+		(WIDTH-d3.sum([margins.left,margins.right,padding.left,padding.right]))/options.columns.length
+	];
 
-});
+	var tooltip=d3.select(options.container)
+					.select("#tooltip");
+
+	var svg=d3.select(options.container)
+				.style("width",WIDTH+"px")	
+				.append("svg")
+				.attr("width",WIDTH)
+				.attr("height",HEIGHT);
+
+	var defs=svg.append("defs")
+			.append("pattern")
+				.attr({
+					id:"diagonalHatch",
+					width:3,
+					height:3,
+					patternTransform:"rotate(-45 0 0)",
+					patternUnits:"userSpaceOnUse"
+				});
+	defs.append("rect")
+			.attr({
+				x:0,
+				y:0,
+				width:3,
+				height:3
+			})
+			.style({
+				stroke:"none",
+				fill:"#fff"
+			})
+	defs.append("line")
+			.attr({
+				x0:0,
+				y1:0,
+				x2:0,
+				y2:3
+			})
+			.style({
+				stroke:"#9ecae1",
+				"stroke-opacity":0,
+				"stroke-width":0
+			})
+
+	var xscale=d3.scale.ordinal().domain(options.columns).rangePoints([0,WIDTH-(margins.left+margins.right+padding.left+padding.right)]);
+	var yscales={},
+		width_scales={};
+
+	var extents={};
+
+	function updateScales() {            
+			var extents=(function(){
+				var extents={};
+				options.columns.forEach(function(d,i){
+					extents[d]=d3.extent(nested_data,function(o){
+						if(options.dimensions.indexOf(d)>-1) {
+							return o.values[d];
+						}
+						return o.values[d]/o.values[options.ref]
+					})
+				})
+				return extents;
+			}());
+            
+			var scales={},
+				wscales={};
+
+			options.columns.forEach(function(d){
+				
+				var use=options.use[d] || d; 
+				
+				if(options.scale_map[d]=="ordinal") {
+                    var incStep =0.000001; 
+					var inc=incStep;                    
+					scales[d]=d3.scale.ordinal()
+							.domain(nested_data.sort(function(a, b){
+                                
+								var sorting=options.sorting[use] || d3.ascending;
+								if(a.values[use]==b.values[use]) {
+									if(d3.ascending(a.key,b.key)>1) {
+										a.values[use]+=inc;
+									} else {
+										b.values[use]+=inc;
+									}                                    
+									inc+=incStep;
+								}
+								
+								var __a=(a.values[use]),
+									__b=(b.values[use]);
+
+								if(options.dimensions.indexOf(d)==-1) {
+									__a=(a.values[use]/((options.dimensions.indexOf(use)>-1)?1:a.values[options.ref]));
+									__b=(b.values[use]/((options.dimensions.indexOf(use)>-1)?1:b.values[options.ref]))	
+								}
+								                                                                
+								return sorting(__a, __b);
+
+							}).map(function(o){
+								if(options.dimensions.indexOf(use)>-1) {
+									return o.values[use];
+								}
+								return o.values[use]/((options.dimensions.indexOf(use)>-1)?1:o.values[options.ref])
+							}))
+							.rangePoints([HEIGHT-(margins.top+margins.bottom+padding.top+padding.bottom),0]);
+							
+				} else {
+					if(extents[d][0]===0) {
+						extents[d][0]=0.01;
+					}
+
+					scales[d]=d3.scale[options.scale_map[d]?options.scale_map[d]:scale_type]().domain(extents[d]).range([HEIGHT-(margins.top+margins.bottom+padding.top+padding.bottom),0]);
+				}
+
+				wscales[d]=d3.scale.linear().domain([0,extents[d][1]]).range(marker_width).nice()
+				
+			})
+			yscales = scales;
+			width_scales = wscales;
+
+			
+	}
+
+	var yAxes={}
+	function createAxes() {
+		var axes={};
+		options.columns.forEach(function(col){
+			axes[col]=d3.svg.axis().scale(yscales[col]).orient(col==options.title_column?"left":"right").tickFormat(function(d){
+
+				if(options.formats[col]) {
+					return d3.format(options.formats[col])(d)
+				}
+
+				if(col==options.title_column) {
+					return "";
+				}
+
+				if(scale_type=="log" && (!options.scale_map[col] || options.scale_map[col]=="log")) {
+					var values=[0.01,0.1,1,10,100,1000,10000,100000,1000000,10000000]
+
+					if(values.indexOf(d)>-1) {
+						return d3.format(d>=100?",.0f":",.2f")(d);
+					}
+					return "";	
+				}
+				if(options.scale_map[col]=="ordinal") {
+					return d;
+				}
+				return d3.format(d>=100?",.0f":",.2f")(d);
+			})
+		})
+		yAxes = axes;
+	}
+	function updateAxes() {
+		
+		options.columns.forEach(function(col){
+			yAxes[col].scale(yscales[col]).tickFormat(function(d){
+
+				if(options.formats[col]) {
+					return d3.format(options.formats[col])(d)
+				}
+
+				if(col==options.title_column) {
+					return "";
+				}
+
+				if(options.scale_map[col]=="ordinal") {
+					return d;
+				}
+
+				if(scale_type=="log") {
+					var values=[0.01,0.1,1,10,100,1000,10000,100000,1000000,10000000]
+
+					if(values.indexOf(d)>-1) {
+						return d3.format(d>=100?",.0f":",.2f")(d);
+					}
+					return "";	
+				}
+				
+				return d3.format(d>=100?",.0f":",.2f")(d);
+			})
+		});
+
+	};
+
+	updateScales();
 
 
-pane.append('g.details').translate([cloudSize, 50])
+    nested_data=nested_data.sort(function(a,b){
+				return d3.descending(a.values["repos_cnt"],b.values["repos_cnt"]);
+			});
 
-},{"d3":5,"d3-jetpack":1,"d3-transform":2,"d3.layout.cloud-browserify":4}]},{},[6]);
+	var languages_group=svg.append("g")
+					.attr("id","languages")
+					.attr("transform","translate("+(margins.left+padding.left)+","+(margins.top+padding.top)+")");
+
+	var labels_group=svg.append("g")
+					.attr("id","labels")
+					.attr("transform","translate("+(margins.left+padding.left)+","+(margins.top+padding.top)+")");
+
+	var columns=svg.append("g")
+					.attr("id","columns")
+					.attr("transform","translate("+(margins.left+padding.left)+","+(margins.top+padding.top)+")");
+
+	function addAxes() {
+
+		var column=columns.selectAll("g.column")
+					.data(options.columns)
+					.enter()
+					.append("g")
+						.attr("class","column")
+						.attr("transform",function(d){
+							var x=xscale(d);
+							return "translate("+x+","+0+")";
+						});
+
+		var title=column.append("text")
+				.attr("class","title")
+				.attr("x",0)
+				.attr("y",0)
+
+		title
+				.filter(function(d){
+					return d==options.title_column	
+				})
+				.classed("first",true)
+				.attr("transform","translate(-10,0)")
+
+		title
+			.selectAll("tspan")
+			.data(function(d){
+				var txt=options.column_map[d];
+				if(typeof txt == "string") {
+					return [txt];
+				}
+				return txt;
+			})
+			.enter()
+			.append("tspan")
+				.attr("x",0)
+				.attr("y",function(d,i){
+					return i*15+(-10-padding.top);
+				})
+				.text(function(d){
+					return d;
+				})
+		
+		title
+			.on("mouseover",function(d,i){
+				tooltip
+					.style("left",function(){
+						var x=xscale(d)+margins.left+padding.left;
+						
+						if(d!=options.title_column) {
+							x+=marker_width[1]/2;
+						}
+						if(i>options.columns.length-2) {
+							x-=(marker_width[1]+180-20);
+						}
+						return x+"px"
+					})
+					.classed("visible",true)
+						.select("div")
+							.html(options.help[d])
+			})
+			.on("mouseout",function(){
+				tooltip
+					.classed("visible",false)
+			})
+
+		var axis=column
+				.filter(function(col){
+					return options.scale_map[col]=="ordinal" && col!=options.title_column;
+				})
+				.append("g")
+					.attr("class","axis")
+					.attr("transform",function(d){
+						var x=0,
+							y=HEIGHT-(margins.bottom+margins.top+padding.bottom+5);
+						return "translate("+x+","+y+")";
+					})
+
+		axis.append("line")
+			.attr("x1",function(d){
+				return -width_scales[d].range()[1]/2;
+			})
+			.attr("y1",0)
+			.attr("x2",function(d){
+				return width_scales[d].range()[1]/2;
+			})
+			.attr("y2",0)
+
+		var ticks=axis
+			.selectAll("g.tick")
+				.data(function(d){
+
+					var ticks=[
+								0,
+								width_scales[d].domain()[1]
+							].map(function(v,i){
+						return {
+							value:i===0?0:v,
+							x:(i===0?0:width_scales[d](v)/2),
+							domain:width_scales[d].domain(),
+							range:width_scales[d].range()
+						}
+					});
+					
+					return ticks.concat(ticks.map(function(t){
+						return {
+							scale:d,
+							value:t.value,
+							x:-t.x
+						};
+					}));
+				})
+				.enter()
+				.append("g")
+					.attr("class","tick")
+					.classed("start",function(d){
+						return d.x<0;
+					})
+					.classed("end",function(d){
+						return d.x>0;
+					})
+					.attr("transform",function(d){
+						return "translate("+d.x+",0)";
+					})        
+		ticks.append("line")
+			.attr("x1",0)
+			.attr("y1",-3)
+			.attr("x2",0)
+			.attr("y2",3)
+
+		ticks.append("text")
+			.attr("x",0)
+			.attr("y",12)
+			.text(function(d){
+				return d3.format("s")(d.value);
+			})
+	}
+	function updateAxes() {
+
+		columns
+			.selectAll("g.axis")
+			.selectAll("g.tick")
+					.data(function(d){
+
+						var ticks=[
+									0,
+									width_scales[d].domain()[1]
+								].map(function(v,i){
+							return {
+								value:i===0?0:v,
+								x:(i===0?0:width_scales[d](v)/2),
+								domain:width_scales[d].domain(),
+								range:width_scales[d].range()
+							}
+						});
+
+						return ticks.concat(ticks.map(function(d){
+							return {
+								value:d.value,
+								x:-d.x
+							};
+						}));
+					})
+					.select("text")
+						.text(function(d){
+							return d3.format("s")(d.value);
+						})
+	}
+	addAxes();
+
+	var labels=labels_group.selectAll("g.labels")
+					.data(nested_data,function(d){
+						return d.key;
+					})
+					.enter()
+					.append("g")
+						.attr("class","labels")
+						.attr("rel",function(d){
+							return d.key;
+						})
+						.on("click",function(d){
+							var $this=d3.select(this);
+							$this.classed("highlight",!($this.classed("highlight")))
+							languages_group
+								.selectAll("g.lang[rel='"+d.key+"']")
+								.classed("highlight",$this.classed("highlight"))
+						})
+						.on("mouseover",function(d){
+							d3.select(this).classed("hover",true)
+							languages_group
+								.selectAll("g.lang[rel='"+d.key+"']")
+								.classed("hover",true)	
+						})
+						.on("mouseout",function(d){
+							svg.selectAll("g.hover,g.year")
+								.classed("hover",false)
+								.classed("year",false);
+						})
+
+	var language=languages_group.selectAll("g.lang")
+					.data(nested_data,function(d){
+						return d.key;
+					})
+					.enter()
+					.append("g")
+						.attr("class","lang")
+						.attr("rel",function(d){
+							return d.key;
+						})
+
+	var line = d3.svg.line()
+		    .x(function(d,i) { return d.x; })
+		    .y(function(d,i) { 
+		    	if(d.y===0) {
+					return yscales[options.use[d.col]||d.col].range()[0]
+				}
+		    	return yscales[options.use[d.col]||d.col](d.y)
+		    });
+
+	function createLanguages(languages) {
+		languages.append("g")
+				.attr("class","connections")
+		
+
+		languages.append("g")
+				.attr("class","markers")	
+
+		languages.append("g")
+				.attr("class","lang-label")
+				.call(createLangLabel)
+
+		
+	}
+	
+	
+	
+	createLanguages(language);
+	updateConnections(-1);
+	updateMarkers(-1);
+	updateLabels(-1);
+	updateLangLabels(-1);
+	
+
+	function updateMarkers(duration) {
+
+		var marker=languages_group
+				.selectAll(".lang").select("g.markers")
+					.selectAll("g.marker")
+						.data(function(d){
+							return options.columns.filter(function(col){
+									return col!=options.title_column
+								}).map(function(col){
+									return {
+										lang:d.key,
+										column:col,
+										value:d.values[col],
+										ref:d.values[options.ref]
+									}
+								})
+						},function(d){
+							return d.lang+"_"+d.column;
+						});
+
+		marker.exit()
+			.remove();
+
+		var new_markers=marker.enter()
+						.append("g")
+							.attr("class","marker")
+							.classed("ordinal",function(d){
+								return options.scale_map[d.column]=="ordinal"
+							})
+							.attr("transform",function(d){
+
+								var x=xscale(d.column),
+									y=yscales[d.column].range()[0];
+								
+								return "translate("+x+","+y+")";
+							})
+							
+
+		new_markers
+				.filter(function(d){
+					return options.scale_map[d.column]=="ordinal"
+				})
+				.append("rect")
+				.attr("x",function(d){
+					return 0;
+				})
+				.attr("y",-4)
+				.attr("width",0)
+				.attr("height",8)
+				.style({					
+                    fill:"#9ecae1"
+				})
+
+		new_markers
+				.filter(function(d){
+					return options.scale_map[d.column]!="ordinal"
+				})
+				.append("circle")
+				.attr("cx",0)
+				.attr("cy",0)
+				.attr("r",2)
+
+		new_markers
+				.filter(function(d){
+					return options.scale_map[d.column]!="ordinal"
+				})
+					.append("circle")
+					.attr("class","hover")
+					.attr("cx",0)
+					.attr("cy",0)
+					.attr("r",5)
+				
+
+		marker
+			.transition()
+			.duration(duration || options.duration)
+			.attr("transform",function(d){
+
+				var x=xscale(d.column),
+					y=yscales[d.column](d.value/d.ref);
+				if(d[d.column]===0) {
+					y=yscales[d.column].range()[0]
+				}
+				if(options.dimensions.indexOf(d.column)>-1) {
+					y=yscales[d.column](d.value)
+				}
+
+				return "translate("+x+","+y+")";
+			})
+
+		marker
+			.select("rect")
+				.transition()
+				.duration(options.duration)
+				.attr("x",function(d){
+					return -width_scales[d.column](d.value/((options.dimensions.indexOf(d.column)>-1)?1:d.ref))/2;
+				})
+				.attr("width",function(d){
+					return width_scales[d.column](d.value/((options.dimensions.indexOf(d.column)>-1)?1:d.ref));
+				})
+	}
+
+	function updateConnections(duration) {
+		var connection=languages_group
+				.selectAll(".lang")
+				.select("g.connections")
+					.selectAll("g.connection")
+					.data(function(d){
+						
+						var values=options.columns.map(function(col,i){
+							var use=options.use[col] || col;
+
+							var val={
+								x:xscale(col),
+								col:col
+							}
+							var val2={
+								x:xscale(col),
+								col:col
+							}
+
+							var delta=5;
+
+							if(options.dimensions.indexOf(col)>-1) {
+
+								var y=d.values[use];
+
+
+								if(typeof y == "number") {
+									val.x-=(i==0?0:(width_scales[use](y))/2+delta)
+									val2.x+=((i==options.columns.length-1)?0:(width_scales[use](y))/2+delta)
+								} else {
+									val.x-=delta;
+									val2.x+=delta;
+								}
+								val.y=d.values[use];
+								val2.y=d.values[use];
+
+								return [val,val2];
+							}
+
+							var y=d.values[use]/((options.dimensions.indexOf(use)>-1)?1:d.values[options.ref]);
+							val.y=y;
+							val2.y=y;
+
+							val.x-=(i==0?0:(width_scales[use](y))/2+delta)
+							val2.x+=((i==options.columns.length-1)?0:(width_scales[use](y))/2+delta)
+
+
+
+							return [val,val2]
+						});
+						
+						var flattened=values.reduce(function(a, b) {
+							return a.concat(b);
+						});
+						return [{
+									lang:d.key,
+									path:flattened
+								}]
+					},function(d){
+						return d.lang;
+					});
+			
+			connection
+				.exit()
+				.remove();
+
+			var new_connection=connection
+									.enter()
+									.append("g")
+									.attr("class","connection")
+
+			new_connection
+				.append("path")
+					.attr("class","hover")
+
+			new_connection
+				.append("path")
+				.attr("class","line")
+
+			var paths=["line","hover"];
+			paths.forEach(function(p){
+				connection
+					.select("path."+p)
+					.transition()
+					.duration(duration || options.duration)
+						.attr("d",function(d){
+							return line(d.path)
+						})
+			});
+	}	
+
+	function updateLabels(duration) {
+		var labels=labels_group
+					.selectAll(".labels")
+						.selectAll("g.label")
+							.data(function(d){
+								return options.columns
+									.map(function(col){
+										var use=options.use[col] || col;
+										
+										return {
+											lang:d.key,
+											column:col,
+											value:d.values[use],
+											ref:d.values[options.ref],
+											text_width:0,
+											marker_width:0
+										}
+									})
+							});
+		var new_label=labels.enter()
+					.append("g")
+						.attr("class","label");
+		
+		new_label
+			.filter(function(d){
+				return d.column!=options.title_column;
+			})
+			.append("path")
+
+		new_label
+			.filter(function(d){
+				return d.column!=options.title_column;
+			})
+			.append("text")
+				.attr("x",0)
+				.attr("y",4)
+
+		new_label.append("rect")
+					.attr("class","ix")
+					.attr("y",-8)
+					.attr("height",15)
+
+		labels
+			.selectAll("path.label")
+				.attr("d","M0,0L0,0");
+		labels
+			.selectAll("rect.ix")
+				.attr("width",0)
+				.attr("x",0)
+
+		labels
+			.select("text")
+				.text(function(d){
+
+					if(options.formats[d.column]) {
+						return d3.format(options.formats[d.column])(d.value)
+					}
+
+					if(options.dimensions.indexOf(d.column)>-1) {
+						return d3.format(d.value>100?",.0f":",.2f")(d.value)
+					}
+					var y=d.valuefd.ref;
+					
+					return d3.format(y>100?",.0f":",.2f")(y) 
+				})
+				.each(function(d) {
+					d.marker_width = width_scales[d.column](d.value/((options.dimensions.indexOf(d.column)>-1)?1:d.ref));
+					d.text_width = this.getBBox().width;
+				});
+
+
+
+		labels
+			.select("path")
+			.attr("class","label")
+			.attr("d",function(d){
+				var dw=10,
+					w=d.text_width+dw;
+				return "M"+(w/2+dw/2)+",0l-"+dw/2+",-10l-"+w+",0l0,20l"+w+",0z";
+			})
+		labels
+			.select("rect.ix")
+				.attr("x",function(d){
+					if(d.column==options.title_column) {
+						return -(padding.left+margins.left);
+					}
+					if(d.column=="year") {
+						return -40;
+					}
+					return d.text_width/2;
+				})
+				.attr("width",function(d){
+					if(d.column==options.title_column) {
+						return (padding.left+margins.left);
+					}
+					return d.marker_width+20;
+				})
+
+		labels
+			.attr("transform",function(d){
+
+				var x=xscale(d.column);
+					y=yscales[d.column](d.value);
+
+				if(d.column=="year") {
+					return "translate("+(x+20)+","+y+")"
+				}
+
+				if(d[d.column]===0) {
+					y=yscales[d.column].range()[0]
+				}
+				if(options.dimensions.indexOf(d.column)==-1) {
+					y=yscales[d.column](d.value/d.ref)
+				}
+                                
+				return "translate("+(x-d.marker_width/2-d.text_width/2-10)+","+y+")";
+			})
+
+		labels
+			.filter(function(d){
+				return d.column=="year"
+			})
+				.on("mouseover",function(d){
+					labels_group
+						.selectAll(".labels").classed("year",function(l){
+								return l.values.year==d.value;
+					});
+					languages_group
+						.selectAll(".lang").classed("year",function(l){
+								return l.values.year==d.value;
+					});
+					
+				})
+
+	}
+	
+
+	function createLangLabel(lang_label) {
+
+		lang_label
+				.attr("transform",function(d){
+					
+					
+					var x=xscale(options.title_column),
+						y=yscales[options.title_column].range()[0];
+					
+					return "translate("+x+","+y+")";
+
+				});
+
+		var rect=lang_label.append("rect")
+						.attr("x",-(padding.left+margins.left))
+						.attr("width",padding.left+margins.left)
+						.attr("y",-9)
+						.attr("height",16)
+
+		lang_label.append("text")
+				.attr("x",-10)
+				.attr("y",3)
+				.text(function(d){
+					return d.values[options.title_column];
+				})
+
+	}
+	function updateLangLabels(duration) {
+		languages_group.selectAll(".lang")
+			.select("g.lang-label")
+				.transition()
+				.duration(duration || options.duration)
+				.attr("transform",function(d){
+					
+					var use=options.use[options.title_column] || options.title_column;
+					var x=xscale(options.title_column),
+						y=yscales[options.title_column](d.values[use]);
+					y=yscales[use](d.values[use]);
+					return "translate("+x+","+y+")";
+
+				});
+	}
+}
+
+module.exports = ParallelCoordinates
+},{"d3":1}]},{},[2]);
