@@ -44,13 +44,47 @@ names(dsp.langs) = c('repo_owner','lang', 'bytes')
 dsp.langs
 
 
+
+dsp.lang.stats =
+(function() {
+    dsp.lang.stats = data.table(data.frame(table(as.sorted.factor(dsp.langs$lang))))
+    names(dsp.lang.stats) = c('lang', 'ocurrence')
+    setkey(dsp.lang.stats, lang)
+    by.size = data.table(dsp.langs)[, sum(bytes) / 1024, by = lang]
+    setkey(by.size, lang)
+    names(by.size) = c('lang', 'code_size_kb')
+    dsp.lang.stats = dsp.lang.stats[by.size]
+
+    #.SD gives 1 row in subset groupped by repo_name
+    lang.main = data.table(dsp.langs)[order(repo_owner, - bytes)][, .SD[1], by = repo_owner]
+    lang.main = data.frame(table(as.sorted.factor(lang.main$lang)))
+    lang.main = data.table(lang.main)
+    names(lang.main) = c('lang', 'repos')
+    setkey(lang.main, lang)    
+    lang.main[dsp.lang.stats]
+    dsp.lang.stats = lang.main[dsp.lang.stats]
+    dsp.lang.stats[is.na(repos)]$repos = 0
+
+    dsp.langs.so.posts = fread('../../data/dsp_langs_in_so_popularity.csv')  
+    setkey(dsp.langs.so.posts, lang)    
+    dsp.lang.stats = dsp.langs.so.posts[dsp.lang.stats]
+    dsp.lang.stats[is.na(posts)]$posts = 0
+    dsp.lang.stats
+})()
+write.csv(dsp.lang.stats, "../../data/dsp.lang.stats.csv", fileEncoding = "UTF-8", row.names=F)
+
+
+
+
+
 (function(){
-  data = data.frame(table(as.sorted.factor(dsp.langs$lang)))
-  data$label = data$Freq
+  data = dsp.lang.stats
+  data$lang = factor(data$lang, data[order(data$ocurrence, decreasing = F)]$lang)
+  data$label = data$ocurrence
   data$label[data$label<4]=''
   ggplot(data) + 
-    geom_bar(aes(x=Var1, y=Freq), stat='identity') +
-    geom_text(aes(x=Var1, y=Freq, label=label, hjust=1.3), colour='white', position = position_dodge(width=1))+
+    geom_bar(aes(x=lang, y=ocurrence), stat='identity') +
+    geom_text(aes(x=lang, y=ocurrence, label=label, hjust=1.3), colour='white', position = position_dodge(width=1))+
     coord_flip() +
     xlab('')+
     dsp_theme()+
@@ -58,40 +92,36 @@ dsp.langs
   ggtitle('Languages occurrence')
 })()
 
-
 (function(){
-  lang.by.bytes = data.table(dsp.langs)[, sum(bytes), by = lang]
-  lang.by.bytes$lang = factor(lang.by.bytes$lang,lang.by.bytes[order(lang.by.bytes$V1,decreasing = F)]$lang)  
-  lang.by.bytes$kbytes = lang.by.bytes$V1/1024
-  ggplot(lang.by.bytes) + geom_bar(aes(x = lang,y=kbytes), stat='identity')+ coord_flip()   +
+  lang.by.bytes = dsp.lang.stats
+  lang.by.bytes$lang = factor(lang.by.bytes$lang, lang.by.bytes[order(lang.by.bytes$code_size_kb, decreasing = F)]$lang)
+  ggplot(lang.by.bytes) + geom_bar(aes(x = lang, y = code_size_kb), stat = 'identity') + coord_flip() +
   theme_minimal()+
   xlab('')+
   ggtitle('Overall code size')
 })()
 
-(function(){
-  #.SD gives 1 row in subset groupped by repo_name
-  lang.main = data.table(dsp.langs)[order(repo_owner, -bytes)][, .SD[1], by=repo_owner]
-  data = data.frame(table(as.sorted.factor(lang.main$lang)))
-  data$label = data$Freq
-  data$label[data$label<2]=''
-  ggplot(data) + 
-    geom_bar(aes(x=Var1, y=Freq), stat='identity') +
-    geom_text(aes(x=Var1, y=Freq, label=label, hjust=1.3), colour='white', position = position_dodge(width=1))+
+(function() {
+    data = dsp.lang.stats[repos != 0]
+    data$lang = factor(data$lang, data[order(data$repos, decreasing = F)]$lang)
+    data$label = data$repos
+    data$label[data$label < 2] = ''
+    ggplot(data) +
+    geom_bar(aes(x = lang, y = repos), stat = 'identity') +
+    geom_text(aes(x = lang, y = repos, label = label, hjust = 1.3), colour = 'white', position = position_dodge(width = 1)) +
     coord_flip() +
-    xlab('')+
-    dsp_theme()+
-  ylab('Projects count') +
+    xlab('') +
+    dsp_theme() +
+    ylab('Projects count') +
     ggtitle('Main languages')
 })()
 
-
-(function(){
-  dsp.langs.so.posts = fread('../../data/dsp_langs_in_so_popularity.csv')
-  dsp.langs.so.posts$lang = factor(dsp.langs.so.posts$lang,dsp.langs.so.posts[order(posts)]$lang)
-  ggplot(dsp.langs.so.posts) + 
-    theme_minimal() + 
-    geom_bar(aes(x = lang,y=posts), stat='identity') + coord_flip()+
+(function() {
+    data = dsp.lang.stats
+    data$lang = factor(data$lang, data[order(data$posts, decreasing = F)]$lang)
+    ggplot(data) +
+    theme_minimal() +
+    geom_bar(aes(x = lang, y = posts), stat = 'identity') + coord_flip() +
     xlab('') +
     ylab('Tagged posts on Stackoverflow in March 2016') +
     ggtitle('DSP languages popularity on StackOverflow')
