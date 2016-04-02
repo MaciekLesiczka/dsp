@@ -35,13 +35,13 @@ dsp.get.langs = function(repos){
 }
 
 
-dsp.langs=fread('../../data/gh_langs.csv')
+#dsp.langs=fread('../../data/gh_langs.csv')
 #uncomment line below to get languages directly from github instead (and you can go for coffee)
-#dsp.langs = dsp.get.langs(repos)
+dsp.langs = dsp.get.langs(repos)
 
 dsp.langs = dsp.langs[,sum(bytes), by =.(repo_owner,lang)]
-names(dsp.langs) = c('repo_owner','lang', 'bytes')
-dsp.langs
+
+
 
 
 
