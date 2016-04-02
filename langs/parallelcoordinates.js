@@ -106,9 +106,6 @@ function ParallelCoordinates(data,options) {
 					scales[d]=d3.scale.ordinal()
 							.domain(nested_data.sort(function(a, b){
                                 
-
-                                
-                                
 								var sorting=options.sorting[use] || d3.ascending;
 								if(a.values[use]==b.values[use]) {
 									if(d3.ascending(a.key,b.key)>1) {
