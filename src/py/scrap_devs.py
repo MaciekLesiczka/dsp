@@ -1,3 +1,5 @@
+#Extracts participants list, based on Maciek's page
+
 import urllib2
 from bs4 import BeautifulSoup
 from pandas import DataFrame
