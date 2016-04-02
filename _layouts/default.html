@@ -1,7 +1,11 @@
 <html lang="en-us">
-    {% include head.html %}
     {% include base.html %}
+    {% include head.html %}
+    
     <body>
+        {{base}}
+        <br/>
+        {{page.url}}
         <div class="container-fluid">
             <div class="page-header">
                 <h1><a href="{{base}}">dsp-meta</a></h1>        
