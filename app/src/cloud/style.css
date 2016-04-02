@@ -1,0 +1,44 @@
+﻿path.domain {
+	fill: none;
+}
+
+line {
+	stroke: #777;
+}
+.tag {
+	font-family:Impact
+}
+.dev-list {
+	display: block;
+	float: left;
+}
+
+.dev-list a{
+	display: block;
+	line-height: 1
+}
+
+#techcloud>svg {
+	display: block;
+	float: left;
+}
+
+#techcloud-container  {
+	display: flex;	
+}
+.dev-links {
+	/*max-height: 200px;*/
+	column-count: 2;
+	-moz-column-count: 2;
+	/* Firefox */
+	-webkit-column-count: 2;
+	/* Safari and Chrome */
+	display: table-cell;
+}
+
+.dev-links a {
+	width: 230px;
+	white-space: nowrap;
+	overflow: hidden !important;
+	text-overflow: ellipsis;
+}
