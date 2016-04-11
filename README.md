@@ -1,4 +1,4 @@
-# D3.js application stub
+# DSP-Categories Chart
 
 ## How to install and run
 
