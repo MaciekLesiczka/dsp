@@ -1,9 +1,5 @@
 d3 = require('d3')
 
-// web  mobile     iot    game    tool    data windows 
-// 121      46      30      50      53      16      28 
-
-
 var categories = [
    {name:'web', count: 121},
    {name:'mobile', count: 46},
