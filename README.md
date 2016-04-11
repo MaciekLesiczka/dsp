@@ -1,4 +1,4 @@
-# DSP-Categories Chart
+# DSP-meta: Categories Chart example
 
 ## How to install and run
 
