@@ -1,15 +1,5 @@
 d3 = require('d3')
 
-var categories = [
-   {name:'web', count: 121},
-   {name:'mobile', count: 46},
-   {name:'iot', count: 30},
-   {name:'game', count: 50},
-   {name:'tool', count: 53},
-   {name:'data', count: 16},
-   {name:'windows', count: 28}
-]
-
 var padding ={
     top:10,
     left:10
@@ -17,18 +7,26 @@ var padding ={
 
 var options = {
     bar :{
-        size:8,
-        distance:10
+        size:10,
+        distance:14,
+        color:'#bdbdbd'
     },    
 }
 
-d3.select('#container')
-  .selectAll('rect')
-  .data(categories)
-  .enter()
-  .append('rect')
-  .attr('x',padding.left)
-  .attr('y',function(_,i){return i*options.bar.distance + padding.top})
-  .attr('height',options.bar.size)
-  .attr('width',function(d){return d.count; })
-  .style('fill', "#bdbdbd")
+d3.csv('data/categories.csv', function(categories){
+    
+    d3.select('#container')
+    .selectAll('rect')
+    .data(categories)
+    .enter()
+    .append('rect')
+    
+    .attr('y',function(_,i){return i*options.bar.distance + padding.top
+        })
+    .attr('height',options.bar.size)
+    .attr('width',function(d){return d.count; })
+    .attr('x',padding.left)
+    .style('fill',options.bar.color)    
+})
+
+
