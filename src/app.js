@@ -2,7 +2,7 @@ d3 = require('d3')
 
 var options = {
     bar :{                
-        color:'#bdbdbd',
+        color:'#6baed6',
         padding:0.25
     },
     width:400,
