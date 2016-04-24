@@ -35,37 +35,35 @@ d3.csv('data/categories.csv',
                 .rangeRoundBands([0,options.barHeight],options.bar.padding)    
     var yAxis = d3.svg.axis().scale(yScale).orient('left')   
     
-    var chartGroup = d3.select('#container')
+    var chart = d3.select('#container')
       .append('g')
-      .attr('transform', 'translate(' + options.margin.left + ',' + options.margin.top + ')')
+      .translate([options.margin.left,options.margin.top])
          
-    var bar =chartGroup
+    var bars = chart
       .selectAll('rect')
       .data(categories)
       .enter()
       .append('g')      
-    
-    bar.append('rect')
-       .attr('y',function(x){return yScale(x.category)})
+      .translate(function(x) {return[0,yScale(x.category)]})
+      
+    bars.append('rect')       
        .attr('height',yScale.rangeBand())
        .attr('width',function(d){return xScale(d.count); })              
        .style('fill',options.bar.color)
       
-    bar.append('text')
+    bars.append('text')
        .classed('number',true)
-       .attr('y',function(x){return yScale(x.category)+yScale.rangeBand()/2})
-       .attr('x',function(d){return xScale(d.count)-3; })
-                     
+       .attr('y',yScale.rangeBand()/2)
+       .attr('x',function(d){return xScale(d.count)-3; })                     
        .attr('dy','.35em')
        .text(function(d){return d.count});
-       
-    chartGroup.call(yAxis)      
-    
+              
+    yAxis(chart)   
+          
     d3.select('#container')         
         .append('text')
         .classed('title',true)
-        .text('DSP \'16 Projects' )        
-        .attr('x', 5)
+        .text('DSP \'16 Projects' )                
         .attr('y', options.margin.top/2)
         .attr('dy','.35em')                    
 })
