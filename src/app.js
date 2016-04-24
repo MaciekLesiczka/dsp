@@ -35,7 +35,7 @@ d3.csv('data/categories.csv',
                 .rangeRoundBands([0,options.barHeight],options.bar.padding)    
     var yAxis = d3.svg.axis().scale(yScale).orient('left')   
     
-    var chartGroup = d3.select('.chart')
+    var chartGroup = d3.select('#container')
       .append('g')
       .attr('transform', 'translate(' + options.margin.left + ',' + options.margin.top + ')')
          
@@ -61,7 +61,7 @@ d3.csv('data/categories.csv',
        
     chartGroup.call(yAxis)      
     
-    d3.select('.chart')         
+    d3.select('#container')         
         .append('text')
         .classed('title',true)
         .text('DSP \'16 Projects' )        

@@ -1,28 +1,28 @@
 <html>
     <style>
-        .chart *{
+        #container *{
             font-family:Calibri;
             font-size:18px;            
             font-weight: 300;
             fill:#333;
         }
-        .chart text.number{
+        #container text.number{
             text-anchor: end;
             fill:white;
                         
         }
-        .chart path.domain{            
+        #container path.domain{            
             display: none            
         }
         
-        .chart text.title{
+        #container text.title{
             font-size: 28px;
             font-weight: 500;
         }
         
     </style>
     <body>
-        <svg class='chart' height='100%' width='100%'>
+        <svg id='container' height='100%' width='100%'>
         </svg>
         <script src='/js/bundle.js'></script>
     </body>
