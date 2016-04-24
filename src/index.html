@@ -1,10 +1,27 @@
 <html>
-
-<body>
-<svg id='container'>
-</svg>
-<script src='/js/bundle.js'></script>
-
-</body>
-
+    <style>
+        #container *{
+            font-family:Calibri;
+            font-size:18px;            
+            font-weight: 300;
+            fill:#333;
+        }
+        #container text.number{
+            text-anchor: end;
+            fill:white;                        
+        }
+        #container path.domain{
+            display: none                                    
+        }
+        
+        #container text.title{
+            font-size: 28px;
+            font-weight: 500;
+        }        
+    </style>
+    <body>
+        <svg id='container' height='100%' width='100%'>
+        </svg>
+        <script src='/js/bundle.js'></script>
+    </body>
 </html>
