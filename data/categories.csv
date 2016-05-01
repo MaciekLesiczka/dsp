@@ -1,8 +1,8 @@
-category,count
-Web,121
-Mobile,46
-IOT,30
-Game,50
-Tool,53
-Data,16
-Windows,28
+category,count,description
+Web,121,"Web applications, written mostly in ASP.NET MVC but also in python and PHP."
+Mobile,46,"Projects with mobile as a primary UI or those that utilize mobile devices in some way."
+IOT,30,"Everything close to the Metal. IOT, RasperryPI, Arduino and other technologies connected to hardware."
+Game,50,"Gamedev tools, games and their engines."
+Tool,53,"Developer tools, libraries and utilities."
+Data,16,"All about (big) data, algorithms, math, statistics or AI in general."
+Windows,28,"Aplications dedicated to Windows, mostly Universal Windows Platform."

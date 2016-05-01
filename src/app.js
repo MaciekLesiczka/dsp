@@ -1,21 +1,25 @@
 var d3 = require('d3-jetpack')
 
-
 var options = {
     bar :{                
         color:'#6baed6',
+        selected:'#3182bd',
         padding:0.3
     },
     width:450,
     height:350, 
     margin:{
         left:100,
-        top:30
+        top:40,
+        bottom:25
+    },
+    description:{
+        width:150
     }
 }    
 
 options.barWidth = options.width - options.margin.left
-options.barHeight = options.height - options.margin.top
+options.barHeight = options.height - options.margin.top - options.margin.bottom
 
 d3.csv('data/categories.csv',
  function(d){
@@ -32,7 +36,7 @@ d3.csv('data/categories.csv',
     var yScale = 
         d3.scale.ordinal()
                 .domain(categories.map(function(x){return x.category}))
-                .rangeRoundBands([0,options.barHeight],options.bar.padding)    
+                .rangeRoundBands([0,options.barHeight],options.bar.padding,0)    
     var yAxis = d3.svg.axis().scale(yScale).orient('left')   
     
     var chart = d3.select('#container')
@@ -40,16 +44,26 @@ d3.csv('data/categories.csv',
       .translate([options.margin.left,options.margin.top])
          
     var bars = chart
-      .selectAll('rect')
+      .selectAll('g.bar-group')
       .data(categories)
       .enter()
-      .append('g')      
+      .append('g')
+      .classed('bar-group', true)
       .translate(function(x) {return[0,yScale(x.category)]})
+      .on('mouseover', function(d){                
+         d3.select(this).select('rect').style('fill', options.bar.selected)
+         d3.select('#description').select('span').text(d.description)
+      })
+      .on('mouseout', function(d){
+          d3.select(this).select('rect').style('fill', options.bar.color)
+          d3.select('#description').select('span').text('')
+      });
       
     bars.append('rect')       
-       .attr('height',yScale.rangeBand())
+       .attr('height',yScale.rangeBand()) 
        .attr('width',function(d){return xScale(d.count); })              
        .style('fill',options.bar.color)
+
       
     bars.append('text')
        .classed('number',true)
@@ -65,7 +79,10 @@ d3.csv('data/categories.csv',
         .classed('title',true)
         .text('DSP \'16 Projects' )                
         .attr('y', options.margin.top/2)
-        .attr('dy','.35em')                    
+        .attr('dy','.35em')      
+        
+    d3.select('#description')
+      .style('width',options.description.width)
+      .style('left', options.width - options.description.width)
+      .style('height',options.height - options.margin.bottom)            
 })
-
-

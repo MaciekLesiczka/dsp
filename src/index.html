@@ -1,10 +1,16 @@
 <html>
     <style>
-        #container *{
+        *{
             font-family:Calibri;
-            font-size:18px;            
             font-weight: 300;
+        }
+        #container *{            
+            font-size:18px;            
+            
             fill:#333;
+        }
+        #container .bar-group{
+            cursor: pointer
         }
         #container text.number{
             text-anchor: end;
@@ -12,16 +18,29 @@
         }
         #container path.domain{
             display: none                                    
-        }
-        
+        }        
         #container text.title{
             font-size: 28px;
             font-weight: 500;
         }        
+        #description {       
+            position: fixed;
+        }
+        #description > span{
+            display: block;                        
+            text-align: right;         
+            position: absolute;
+            bottom: 0;
+            right: 0;   
+            color: #555
+        }                
     </style>
     <body>
+        <div id='description'>
+            <span></span>
+        </div>
         <svg id='container' height='100%' width='100%'>
         </svg>
-        <script src='/js/bundle.js'></script>
+        <script src='/js/bundle.js'></script>        
     </body>
 </html>
