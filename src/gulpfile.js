@@ -28,7 +28,7 @@ gulp.task('browserify',function(){
 })
 
 gulp.task('copy', function(){
-	return gulp.src('../data/sample.csv')
+	return gulp.src('../data/links.csv')
 	.pipe(gulp.dest('./data/'));
 })
 
