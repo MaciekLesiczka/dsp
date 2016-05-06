@@ -1,9 +1,7 @@
 #Script loads all users that posted status with #dajsiepoznac hashtag
 
 
-import httplib
-import twitter
-from dsp_twitter_auth import *
+from twitter_common import *
 from BeautifulSoup import BeautifulSoup
 import io, json
 from urlparse import urlparse
@@ -25,8 +23,7 @@ tweets = [
 
 # Step 1. get tweet details from API
 
-auth = twitter.oauth.OAuth(OAUTH_TOKEN, OAUTH_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET) #provide those values from your own imported script (dsp_twitter_auth.py)
-twitter_api = twitter.Twitter(auth=auth)
+
 ranges = [(n*100,(n+1)*100) for n in range(0, len(tweets)/100)]
 ranges.append((ranges[-1][1],len(tweets)))
 
@@ -45,7 +42,7 @@ def getAllTeets():
 tweetsJson = getAllTeets()
 
 
-with io.open('..\..\data\\tweets_03052016.json', 'w', encoding='utf-8') as f:
+with io.open('..\..\..\data\\tweeter\\tweets_03052016.json', 'w', encoding='utf-8') as f:
   f.write(unicode(json.dumps(tweetsJson, ensure_ascii=False)))
 
 
@@ -101,7 +98,8 @@ found_manually = {
     'borowczykk': 'codestorm.pl',
     'BentkowskiJakub': 'bentkowski.northeurope.cloudapp.azure.com',
     'larciszewski': 'duszekmestre.wordpress.com',
-    'MaciekLesiczka':'macieklesiczka.github.io'
+    'MaciekLesiczka': 'macieklesiczka.github.io',
+    'KrzysztofSeroka': 'chrisseroka.wordpress.com'
 }
 
 announcementDay = datetime(2016,02,01)
@@ -119,7 +117,7 @@ all_urls = all_urls[all_urls.domain.isin(excluded_domains) == False ][all_urls.u
 ## Step 4. find all accounts by blog URL
 
 
-devs = DataFrame.from_csv("..\..\data\devs.csv", encoding="utf-8",index_col=False)[['blog_url', 'first_name', 'last_name']]
+devs = DataFrame.from_csv("..\..\..\data\devs.csv", encoding="utf-8",index_col=False)[['blog_url', 'first_name', 'last_name']]
 devs['domain'] = devs.blog_url.map(lambda x: get_netloc(x))
 
 accounts_domains = all_urls[['user', 'domain']].drop_duplicates()
@@ -141,4 +139,31 @@ found_by_short_url = pd.merge(not_found[['user', 'domain']].drop_duplicates() ,d
 
 twitter_accounts = pd.concat([found_by_short_url,found_by_blog_url])[['blog_url', 'user', 'first_name', 'last_name']]
 
-twitter_accounts.to_csv("..\..\data\devs_twitter.csv", encoding="UTF-8", index=False)
+# 5.1 method above doesn't guarantee uniquness, so let's check duplicates and remove them
+twitter_accounts = twitter_accounts[(twitter_accounts.user!='mdymel') | (twitter_accounts.last_name!='Sroka')]
+twitter_accounts.groupby('user').size()[twitter_accounts.groupby('user').size()!=1]
+
+
+## 6. add accounts details
+
+user_details = twitter_api.users.lookup(screen_name = ','.join(twitter_accounts.user.values))
+
+user_details_df = DataFrame([
+    {
+        'user': ud['screen_name'],
+        'followers_count': ud['followers_count'],
+        'friends_count': ud['friends_count'],
+        'id': ud['id_str']
+    } for ud in user_details
+])
+
+
+twitter_accounts = pd.merge(user_details_df,twitter_accounts,  on='user')
+twitter_accounts.to_csv("..\..\..\data\\twitter\\devs.csv", encoding="UTF-8", index=False)
+
+
+## 6. get tweets times
+
+dsp16_dates = DataFrame( [{'time' : str(t['created_at']),'user':t['user']['name'] } for t in dsp16])
+
+dsp16_dates.to_csv("..\..\..\data\\twitter\\dates.csv", encoding="UTF-8", index=False)
