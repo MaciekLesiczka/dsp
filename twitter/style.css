@@ -1,6 +1,11 @@
 .node {
-  
+  font: 300 11px;
   fill: #bbb;
+}
+
+.popular{
+    fill: steelblue;
+    color: steelblue;    
 }
 
 .node:hover {
@@ -40,10 +45,13 @@
 
 .link--source {
   stroke: #e41a1c;
+  color: #e41a1c;
 }
 .link--target {
   stroke: #4daf4a;
+  color: #4daf4a;
 }
 .link--both {
   stroke: #984ea3 ;
+  color: #984ea3;
 }

@@ -47,6 +47,7 @@ d3.json("twitter_people.json", function(error, classes) {
       .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
       .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
       .text(function(d) { return d.key; })
+      .classed('popular', function(d){return (d.parent) && d.parent.name === 'popular'})
       .on("mouseover", mouseovered)
       .on("mouseout", mouseouted);
 });
