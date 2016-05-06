@@ -25,7 +25,7 @@ var svg = d3.select("body").append("svg")
 var link = svg.append("g").selectAll(".link"),
     node = svg.append("g").selectAll(".node");
 
-d3.json("/data/links.json", function(error, classes) {
+d3.json("/data/twitter_people.json", function(error, classes) {
   if (error) throw error;
 
   nodes = cluster.nodes(packageHierarchy(classes)),
@@ -53,10 +53,14 @@ d3.json("/data/links.json", function(error, classes) {
 function mouseovered(d) {
   node
       .each(function(n) { n.target = n.source = false; });
-
-  link
-      .classed("link--target", function(l) { if (l.target === d) return l.source.source = true; })
+  link 
+      .classed("link--target", function(l) { if (l.target === d) {return l.source.source = true; }})
       .classed("link--source", function(l) { if (l.source === d) return l.target.target = true; })
+      link.classed("link--both", function(l) {
+          var result =  ((l.source === d) && l.target.importsSet.has(d.name) || 
+                  (l.target === d) && l.target.importsSet.has(l.source.name));         
+          return result;
+        })
     .filter(function(l) { return l.target === d || l.source === d; })
       .each(function() { this.parentNode.appendChild(this); });
 
@@ -68,7 +72,8 @@ function mouseovered(d) {
 function mouseouted(d) {
   link
       .classed("link--target", false)
-      .classed("link--source", false);
+      .classed("link--source", false)
+      .classed("link--both", false);
 
   node
       .classed("node--target", false)
@@ -112,10 +117,11 @@ function packageImports(nodes) {
   });
 
   // For each import, construct a link from the source to target node.
-  nodes.forEach(function(d) {
+  nodes.forEach(function(d) { 
     if (d.imports) d.imports.forEach(function(i) {
       imports.push({source: map[d.name], target: map[i]});
     });
+    d.importsSet = d3.set(d.imports)
   });
 
   return imports;

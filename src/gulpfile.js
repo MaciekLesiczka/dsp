@@ -28,7 +28,7 @@ gulp.task('browserify',function(){
 })
 
 gulp.task('copy', function(){
-	return gulp.src('../data/links.csv')
+	return gulp.src('../data/twitter_people.json')
 	.pipe(gulp.dest('./data/'));
 })
 
