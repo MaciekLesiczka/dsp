@@ -1,12 +1,10 @@
 var d3 = require('d3')
-var diameter = 960,
+var diameter = 760,
     radius = diameter / 2,
     innerRadius = radius - 120;
 
 var cluster = d3.layout.cluster()
     .size([360, innerRadius])
-    .sort(null)
-    .value(function(d) { return d.size; });
 
 var bundle = d3.layout.bundle();
 
@@ -16,7 +14,7 @@ var line = d3.svg.line.radial()
     .radius(function(d) { return d.y; })
     .angle(function(d) { return d.x / 180 * Math.PI; });
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#wrapper").append("svg")
     .attr("width", diameter)
     .attr("height", diameter)
   .append("g")
@@ -46,6 +44,7 @@ d3.json("/data/twitter_people.json", function(error, classes) {
       .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
       .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
       .text(function(d) { return d.key; })
+      .classed('popular', function(d){return (d.parent) && d.parent.name === 'popular'})
       .on("mouseover", mouseovered)
       .on("mouseout", mouseouted);
 });
@@ -82,7 +81,6 @@ function mouseouted(d) {
 
 d3.select(self.frameElement).style("height", diameter + "px");
 
-// Lazily construct the package hierarchy from class names.
 function packageHierarchy(classes) {
   var map = {};
 
@@ -106,17 +104,14 @@ function packageHierarchy(classes) {
   return map[""];
 }
 
-// Return a list of imports for the given array of nodes.
 function packageImports(nodes) {
   var map = {},
       imports = [];
 
-  // Compute a map from name to node.
   nodes.forEach(function(d) {
     map[d.name] = d;
   });
 
-  // For each import, construct a link from the source to target node.
   nodes.forEach(function(d) { 
     if (d.imports) d.imports.forEach(function(i) {
       imports.push({source: map[d.name], target: map[i]});
