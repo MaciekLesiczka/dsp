@@ -1,4 +1,4 @@
-# D3.js application stub
+# DSP Twitter accounts network visualization
 
 ## How to install and run
 
