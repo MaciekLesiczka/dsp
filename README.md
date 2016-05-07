@@ -1,4 +1,4 @@
-# Twitter Network based visualization
+# DSP Twitter accounts network visualization
 
 ## How to install and run
 
