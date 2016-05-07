@@ -1,4 +1,4 @@
-# D3.js application stub
+# Twitter Network based visualization
 
 ## How to install and run
 
