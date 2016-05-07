@@ -3,127 +3,84 @@ var dc = require('dc')
 crossfilter = require('crossfilter')
 reductio = require('reductio')
  
+var blogReductio = function () {
+    return reductio()
+    .filter(x=> x.type === 'blog') 
+}
 
+var projReductio = function () {
+    return reductio()
+    .filter(x=> x.type === 'proj') 
+}
+
+var projectReducer = projReductio()
+    .exception(function(d) { return d.source; })
+    .exceptionCount(true)
+var postReducer = blogReductio()
+    .exception(function(d) { return d.id; })
+    .exceptionCount(true)
+
+var blogReducer = blogReductio() 
+    .exception(function(d) { return d.source; })
+    .exceptionCount(true) 
+ 
 d3.csv('data/20160507_all_events.csv', function(data){    
     var getDate = d => new Date(d.getFullYear() , d.getMonth(), d.getDate())    
     var parseDate = d3.time.format("%Y-%m-%d").parse;
     data.forEach(function(d) {
-        d.date = getDate( parseDate(d.date));
-        d.total= 1;
+        d.date = getDate( parseDate(d.date));        
     });
          
-    var ndx = crossfilter(data)
+    var ndx = crossfilter(data)    
+        var dimensions = {
+        date : ndx.dimension(function(d) {return d.date;}),
+        source: ndx.dimension(function(d) {return d.source}),
+        id:ndx.dimension(function(d) {return d.id})
+    }
     
-    var projectReducer = reductio()
-        .filter(x=> x.type === 'proj') 
-        .exception(function(d) { return d.source; })
-        .exceptionCount(true)
-    var postReducer = reductio()
-        .filter(x=> x.type === 'blog') 
-        .exception(function(d) { return d.id; })
-        .exceptionCount(true)
+    var postCounter = blogReductio().count(true)
+    var commitCounter = projReductio().count(true)
+    var projectsPerDay = projectReducer(dimensions.date.group());
+    var postsPerDay = postReducer(dimensions.date.group());            
+    var projsCount = projectReducer(dimensions.source.groupAll())   
+    var commitsCount = commitCounter(dimensions.id.groupAll())         
+    var blogsCount = blogReducer(dimensions.source.groupAll())
+    var postsCount = postCounter(dimensions.id.groupAll())
     
-    var blogReducer = reductio()
-        .filter(x=> x.type === 'blog') 
-        .exception(function(d) { return d.source; })
-        .exceptionCount(true)
+    minDate = dimensions.date.bottom(1)[0].date;
+    maxDate = dimensions.date.top(1)[0].date;
     
-    dateDim = ndx.dimension(function(d) {return d.date;});
-    var projDim = ndx.dimension(function(d) {return d.source}) 
-       
-    var idDim = ndx.dimension(function(d) {return d.id})
-       
-    var postCounter = reductio()        
-           .filter(x=> x.type === 'blog')
-           .count(true)
-    var commitCounter = reductio()        
-           .filter(x=> x.type === 'proj')
-           .count(true)
-    var projectsPerDay = projectReducer(dateDim.group());
-    var postsPerDay = postReducer(dateDim.group()); 
+    var buildUp = function(chart){
+        return chart.width(600).height(300)
+        .dimension(dimensions.date)
+        .renderHorizontalGridLines(true)
+        .x(d3.time.scale().domain([minDate,maxDate]))  
+                            
+        .valueAccessor(function(d) { return d.value.exceptionCount; }) 
+    }
      
-    
-            
-    var projsCount = projectReducer(projDim.groupAll())   
-    var commitsCount = commitCounter(idDim.groupAll())         
-    var blogsCount = blogReducer(projDim.groupAll())
-    var postsCount = postCounter(idDim.groupAll())
-    
-    minDate = dateDim.bottom(1)[0].date;
-    maxDate = dateDim.top(1)[0].date;
-
-    // var lineChart1 =dc.lineChart("#chart-line-projectsperday") 
-    // lineChart1 
-    //     .width(700).height(300)
-    //     .dimension(dateDim)
-    //     .group(projectsPerDay)
-    //     .valueAccessor(function(d) { return d.value.exceptionCount; })                
-    //     .x(d3.time.scale().domain([minDate,maxDate]))
-           
-(function() {
-    var compositeChart = dc.compositeChart;
-    dc.compositeChart = function(parent, chartGroup) {
-        var _chart = compositeChart(parent, chartGroup);
+    buildUp(dc.lineChart("#chart-line-projectsperday"))             
+        .group(projectsPerDay)                                                
+        .colors(['#e41a1c'])
         
-        _chart._brushing = function () {
-            var extent = _chart.extendBrush();
-            var rangedFilter = null;
-            if(!_chart.brushIsEmpty(extent)) {
-                rangedFilter = dc.filters.RangedFilter(extent[0], extent[1]);
-            }
-
-            dc.events.trigger(function () {
-                if (!rangedFilter) {
-                    _chart.filter(null);
-                } else {
-                    _chart.replaceFilter(rangedFilter);
-                }
-                _chart.redrawGroup();
-            }, dc.constants.EVENT_DELAY);
-        };
+    buildUp(dc.lineChart("#chart-line-postsperday"))         
+        .group(postsPerDay)
+        .brushOn(false)
+        .colors(['#377eb8'])
         
-        return _chart;
-    };
-})();    
-    
-    var comp = dc.compositeChart("#chart-line-projectsperday")
-    .width(700).height(300)
-    .dimension(dateDim)
-    .legend(dc.legend().x(50).y(10).itemHeight(13).gap(5))
-    
-    .x(d3.time.scale().domain([minDate,maxDate]));
-    
-    lineChart1 = dc.lineChart(comp)   
         
-        .group(projectsPerDay,"123")
-        .brushOn(true)        
-        .colors(['#248221'])
-        .valueAccessor(function(d) { return d.value.exceptionCount; })                
-    lineChart2 = dc.lineChart(comp)                 
-        .group(postsPerDay,"121")
-        .brushOn(true)
-        .valueAccessor(function(d) { return d.value.exceptionCount; })        
+    var createNumberDisplay = function(group,elementId, propertyName){
+        dc.numberDisplay(elementId)
+         .transitionDuration(0)
+         .formatNumber(d3.format("d"))
+         .valueAccessor(function(d){return d[propertyName];})
+         .group(group)    
+    }
     
-    comp.compose([lineChart1,lineChart2])
-    
-    
-    dc.numberDisplay('#project-box')
-      .formatNumber(d3.format(".3s"))
-      .valueAccessor(function(d){return d.exceptionCount})
-      .group(projsCount)
-    dc.numberDisplay('#commit-box')
-      .formatNumber(d3.format(".3s"))
-      .valueAccessor(function(d){return d.count})
-      .group(commitsCount)   
-    dc.numberDisplay('#blog-box')
-      .formatNumber(d3.format(".3s"))
-      .valueAccessor(function(d){return d.exceptionCount})
-      .group(blogsCount)  
-    dc.numberDisplay('#post-box')
-      .formatNumber(d3.format(".3s"))
-      .valueAccessor(function(d){return d.count})
-      .group(postsCount)              
+    createNumberDisplay(projsCount,'#project-box', 'exceptionCount')
+    createNumberDisplay(commitsCount,'#commit-box', 'count')
+    createNumberDisplay(blogsCount,'#blog-box', 'exceptionCount')
+    createNumberDisplay(postsCount,'#post-box', 'count')          
         
     dc.renderAll(); 
-
 })
