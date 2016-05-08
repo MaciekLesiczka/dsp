@@ -50,9 +50,9 @@ d3.csv('20160507_all_events.csv', function(data){
     
     minDate = dimensions.date.bottom(1)[0].date;
     maxDate = dimensions.date.top(1)[0].date;
-    
+    width = Math.min(window.innerWidth,700)
     var buildUp = function(chart){
-        return chart.width(600).height(300)
+        return chart.width(width).height(300)
         .dimension(dimensions.date)
         .renderHorizontalGridLines(true)
         .x(d3.time.scale().domain([minDate,maxDate]))  
