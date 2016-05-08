@@ -60,15 +60,15 @@ d3.csv('data/20160507_all_events.csv', function(data){
     }
      
     buildUp(dc.lineChart("#chart-line-projectsperday"))             
-        .group(projectsPerDay)                                                
-        .colors(['#e41a1c'])
+        .group(projectsPerDay)   
+        .colors(['#377eb8'])                                             
+        
         
     buildUp(dc.lineChart("#chart-line-postsperday"))         
         .group(postsPerDay)
         .brushOn(false)
-        .colors(['#377eb8'])
-        
-        
+        .colors(['#e41a1c'])
+
     var createNumberDisplay = function(group,elementId, propertyName){
         dc.numberDisplay(elementId)
          .transitionDuration(0)
