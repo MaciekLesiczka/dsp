@@ -1,0 +1,17 @@
+div.dc-chart {
+	float: none;
+}
+
+
+
+.table-layout {
+    display:table;
+    width:100%;
+}
+.table-layout .table-cell {
+    display:table-cell;
+}
+
+.fixed-width-200 {
+    width:150px;
+}
