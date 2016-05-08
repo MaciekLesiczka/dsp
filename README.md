@@ -1,6 +1,6 @@
 # DSP Statistics dashboard.
 
-Published at [](http://macieklesiczka.github.io/dsp/stats/).
+Published at [http://macieklesiczka.github.io/dsp/stats/](http://macieklesiczka.github.io/dsp/stats/).
 
 ## How to install and run
 
