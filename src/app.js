@@ -5,12 +5,12 @@ reductio = require('reductio')
  
 var blogReductio = function () {
     return reductio()
-    .filter(x=> x.type === 'blog') 
+    .filter(function(x){return x.type === 'blog'}) 
 }
 
 var projReductio = function () {
     return reductio()
-    .filter(x=> x.type === 'proj') 
+    .filter(function(x){return x.type === 'proj'}) 
 }
 
 var projectReducer = projReductio()
@@ -25,7 +25,7 @@ var blogReducer = blogReductio()
     .exceptionCount(true) 
  
 d3.csv('data/20160507_all_events.csv', function(data){    
-    var getDate = d => new Date(d.getFullYear() , d.getMonth(), d.getDate())    
+    var getDate = function(d) {return new Date(d.getFullYear() , d.getMonth(), d.getDate())}    
     var parseDate = d3.time.format("%Y-%m-%d").parse;
     data.forEach(function(d) {
         d.date = getDate( parseDate(d.date));        
