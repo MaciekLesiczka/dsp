@@ -1,4 +1,6 @@
-# D3.js application stub
+# DSP Statistics dashboard.
+
+Published at [](http://macieklesiczka.github.io/dsp/stats/).
 
 ## How to install and run
 
