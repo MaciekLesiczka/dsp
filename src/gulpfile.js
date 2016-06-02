@@ -14,21 +14,21 @@ gulp.task('browserify',function(){
 		cache:{},
 		packageCache:{},
 		plugin:[watchify]
-	});		
+	});
 	b.on('update', bundle);
-	b.on('log', gutil.log); 
-	
-	function bundle(){		
+	b.on('log', gutil.log);
+
+	function bundle(){
 		b.bundle()
 			.on('error', gutil.log.bind(gutil, 'Browserify Error'))
-			.pipe(source('bundle.js'))        
+			.pipe(source('bundle.js'))
 			.pipe(gulp.dest('./js/'));
 	}
 	bundle();
 })
 
 gulp.task('copy', function(){
-	return gulp.src('../data/20160507_all_events.csv')
+	return gulp.src('../data/20160602_all_events.csv')
 	.pipe(gulp.dest('./data/'));
 })
 
