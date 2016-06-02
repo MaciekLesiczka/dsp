@@ -1,17 +1,17 @@
-﻿(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var d3 = require('d3')
 var dc = require('dc')
 crossfilter = require('crossfilter')
 reductio = require('reductio')
- 
+
 var blogReductio = function () {
     return reductio()
-    .filter(function(x){return x.type === 'blog'}) 
+    .filter(function(x){return x.type === 'blog'})
 }
 
 var projReductio = function () {
     return reductio()
-    .filter(function(x){return x.type === 'proj'}) 
+    .filter(function(x){return x.type === 'proj'})
 }
 
 var projectReducer = projReductio()
@@ -21,33 +21,33 @@ var postReducer = blogReductio()
     .exception(function(d) { return d.id; })
     .exceptionCount(true)
 
-var blogReducer = blogReductio() 
+var blogReducer = blogReductio()
     .exception(function(d) { return d.source; })
-    .exceptionCount(true) 
- 
-d3.csv('20160507_all_events.csv', function(data){    
-    var getDate = function(d) {return new Date(d.getFullYear() , d.getMonth(), d.getDate())}    
+    .exceptionCount(true)
+
+d3.csv('20160602_all_events.csv', function(data){
+    var getDate = function(d) {return new Date(d.getFullYear() , d.getMonth(), d.getDate())}
     var parseDate = d3.time.format("%Y-%m-%d").parse;
     data.forEach(function(d) {
-        d.date = getDate( parseDate(d.date));        
+        d.date = getDate( parseDate(d.date));
     });
-         
-    var ndx = crossfilter(data)    
+
+    var ndx = crossfilter(data)
         var dimensions = {
         date : ndx.dimension(function(d) {return d.date;}),
         source: ndx.dimension(function(d) {return d.source}),
         id:ndx.dimension(function(d) {return d.id})
     }
-    
+
     var postCounter = blogReductio().count(true)
     var commitCounter = projReductio().count(true)
     var projectsPerDay = projectReducer(dimensions.date.group());
-    var postsPerDay = postReducer(dimensions.date.group());            
-    var projsCount = projectReducer(dimensions.source.groupAll())   
-    var commitsCount = commitCounter(dimensions.id.groupAll())         
+    var postsPerDay = postReducer(dimensions.date.group());
+    var projsCount = projectReducer(dimensions.source.groupAll())
+    var commitsCount = commitCounter(dimensions.id.groupAll())
     var blogsCount = blogReducer(dimensions.source.groupAll())
     var postsCount = postCounter(dimensions.id.groupAll())
-    
+
     minDate = dimensions.date.bottom(1)[0].date;
     maxDate = dimensions.date.top(1)[0].date;
     width = Math.min(window.innerWidth,700)
@@ -55,17 +55,17 @@ d3.csv('20160507_all_events.csv', function(data){
         return chart.width(width).height(300)
         .dimension(dimensions.date)
         .renderHorizontalGridLines(true)
-        .x(d3.time.scale().domain([minDate,maxDate]))  
-                            
-        .valueAccessor(function(d) { return d.value.exceptionCount; }) 
+        .x(d3.time.scale().domain([minDate,maxDate]))
+
+        .valueAccessor(function(d) { return d.value.exceptionCount; })
     }
-     
-    buildUp(dc.lineChart("#chart-line-projectsperday"))             
-        .group(projectsPerDay)   
-        .colors(['#377eb8'])                                             
-        
-        
-    buildUp(dc.lineChart("#chart-line-postsperday"))         
+
+    buildUp(dc.lineChart("#chart-line-projectsperday"))
+        .group(projectsPerDay)
+        .colors(['#377eb8'])
+
+
+    buildUp(dc.lineChart("#chart-line-postsperday"))
         .group(postsPerDay)
         .brushOn(false)
         .colors(['#e41a1c'])
@@ -75,15 +75,15 @@ d3.csv('20160507_all_events.csv', function(data){
          .transitionDuration(0)
          .formatNumber(d3.format("d"))
          .valueAccessor(function(d){return d[propertyName];})
-         .group(group)    
+         .group(group)
     }
-    
+
     createNumberDisplay(projsCount,'#project-box', 'exceptionCount')
     createNumberDisplay(commitsCount,'#commit-box', 'count')
     createNumberDisplay(blogsCount,'#blog-box', 'exceptionCount')
-    createNumberDisplay(postsCount,'#post-box', 'count')          
-        
-    dc.renderAll(); 
+    createNumberDisplay(postsCount,'#post-box', 'count')
+
+    dc.renderAll();
 })
 
 },{"crossfilter":3,"d3":4,"dc":5,"reductio":29}],2:[function(require,module,exports){
@@ -1495,7 +1495,7 @@ module.exports = require("./crossfilter").crossfilter;
 },{"./crossfilter":2}],4:[function(require,module,exports){
 !function() {
   var d3 = {
-    version: "3.5.16"
+    version: "3.5.17"
   };
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
@@ -5020,7 +5020,7 @@ module.exports = require("./crossfilter").crossfilter;
         λ0 = λ, sinφ0 = sinφ, cosφ0 = cosφ, point0 = point;
       }
     }
-    return (polarAngle < -ε || polarAngle < ε && d3_geo_areaRingSum < 0) ^ winding & 1;
+    return (polarAngle < -ε || polarAngle < ε && d3_geo_areaRingSum < -ε) ^ winding & 1;
   }
   function d3_geo_clipCircle(radius) {
     var cr = Math.cos(radius), smallRadius = cr > 0, notHemisphere = abs(cr) > ε, interpolate = d3_geo_circleInterpolate(radius, 6 * d3_radians);
@@ -11049,7 +11049,7 @@ module.exports = require("./crossfilter").crossfilter;
 }();
 },{}],5:[function(require,module,exports){
 /*!
- *  dc 2.0.0-beta.29
+ *  dc 2.0.0-beta.30
  *  http://dc-js.github.io/dc.js/
  *  Copyright 2012-2016 Nick Zhu & the dc.js Developers
  *  https://github.com/dc-js/dc.js/blob/master/AUTHORS
@@ -11079,7 +11079,7 @@ module.exports = require("./crossfilter").crossfilter;
  * such as {@link dc.baseMixin#svg .svg} and {@link dc.coordinateGridMixin#xAxis .xAxis},
  * return values that are themselves chainable d3 objects.
  * @namespace dc
- * @version 2.0.0-beta.29
+ * @version 2.0.0-beta.30
  * @example
  * // Example chaining
  * chart.width(300)
@@ -11088,7 +11088,7 @@ module.exports = require("./crossfilter").crossfilter;
  */
 /*jshint -W079*/
 var dc = {
-    version: '2.0.0-beta.29',
+    version: '2.0.0-beta.30',
     constants: {
         CHART_CLASS: 'dc-chart',
         DEBUG_GROUP_CLASS: 'debug',
@@ -13910,11 +13910,13 @@ dc.coordinateGridMixin = function (_chart) {
             _parent = parent;
         }
 
+        var href = window.location.href.split('#')[0];
+
         _g = _parent.append('g');
 
         _chartBodyG = _g.append('g').attr('class', 'chart-body')
             .attr('transform', 'translate(' + _chart.margins().left + ', ' + _chart.margins().top + ')')
-            .attr('clip-path', 'url(' + window.location.href + '#' + getClipPathId() + ')');
+            .attr('clip-path', 'url(' + href + '#' + getClipPathId() + ')');
 
         return _g;
     };
